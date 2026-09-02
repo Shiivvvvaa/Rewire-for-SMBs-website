@@ -1,0 +1,2514 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rewire — Automation studio</title>
+<meta name="description" content="Rewire builds automations inside the tools you already use, so the work your team repeats every week runs on its own.">
+<meta name="theme-color" content="#F4F1EA">
+<link rel="canonical" href="https://rewire.com/">
+
+<!-- Set the js flag synchronously, before first paint, so hidden-until-revealed
+     states are only ever applied when JavaScript is actually running. -->
+<script>document.documentElement.className += " js";</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Display face only (Archivo 600/700) is preloaded and render-blocking. -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&display=swap">
+<!-- Body + utility faces load without blocking render. -->
+<link rel="stylesheet" media="print" onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap"></noscript>
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   REWIRE — CITY IN A GARDEN
+   Every colour in this build comes from the token block below.
+   No colour literal appears anywhere else in this stylesheet.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root{
+  /* ── Grounds and surfaces ─────────────────────────────────────── */
+  --ground:      #F4F1EA;   /* warm cream — primary background      */
+  --raised:      #EAE5D8;   /* secondary surface                    */
+  --jade:        #0F2E2A;   /* deep jade — full-bleed dark sections  */
+  --jade-soft:   #1D4A42;   /* jade surfaces sitting on jade         */
+
+  /* ── Accent. Terracotta is the only accent hue on this site. ──── */
+  --terra:       #C8763C;   /* rules, marks, large type              */
+  --terra-deep:  #A65A26;   /* accent TEXT on cream        4.53:1    */
+  --terra-jade:  #E09A5F;   /* accent TEXT on jade         6.15:1    */
+
+  /* ── Support ──────────────────────────────────────────────────── */
+  --petrol:      #1E4D5C;   /* used sparingly                        */
+
+  /* ── Text ─────────────────────────────────────────────────────── */
+  --ink:         #1A1A18;   /* warm near-black             15.9:1    */
+  --ink-soft:    #514C43;   /* secondary on cream           7.55:1   */
+  --on-jade:     #F0EDE3;   /* on jade                     12.4:1    */
+  --on-jade-soft:#CFD3C7;   /* secondary on jade            9.57:1   */
+
+  /* ── Hairlines ────────────────────────────────────────────────── */
+  --rule:        #D6CEBD;
+  --rule-jade:   #2F5A52;
+
+  /* ── UI state only. Never decorative, never a second accent. ──── */
+  --state-ok:    #3E6B4F;
+  --state-warn:  #7A5C15;
+
+  /* ── Material tints ───────────────────────────────────────────── */
+  --shade:       rgba(0,0,0,.16);   /* louvre fin shadow             */
+  /* Mask stops. These are alpha channels for mask-image, never paint. */
+  --mask-on:     #000;
+  --mask-mid:    rgba(0,0,0,.55);
+  --mask-soft:   rgba(0,0,0,.60);
+  --lift:        rgba(15,46,42,.07);
+  --glow:        rgba(200,118,60,.30);
+
+  /* ── Type ─────────────────────────────────────────────────────── */
+  --f-display: "Archivo", "Noto Sans SC", "Helvetica Neue", Arial, sans-serif;
+  --f-body:    "Source Serif 4", "Noto Sans SC", Georgia, "Times New Roman", serif;
+  --f-mono:    "IBM Plex Mono", "Noto Sans SC", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Body: 17px floor on mobile, 19px at the top end. Never below 17. */
+  --fs-body:  clamp(1.0625rem, 1.0rem + 0.30vw, 1.1875rem);
+  --fs-lead:  clamp(1.1875rem, 1.06rem + 0.62vw, 1.5rem);
+  --fs-h1:    clamp(2.375rem, 1.60rem + 3.30vw, 4.5rem);
+  --fs-h2:    clamp(1.875rem, 1.42rem + 1.95vw, 3rem);
+  --fs-h3:    clamp(1.25rem, 1.14rem + 0.48vw, 1.5rem);
+  --fs-label: 0.6875rem;    /* 11px mono institutional label         */
+
+  /* ── Layout ───────────────────────────────────────────────────── */
+  --wrap:   1240px;
+  --gutter: clamp(20px, 5vw, 56px);
+  --sec-y:  clamp(64px, 8vw, 128px);
+  --measure: 66ch;
+
+  /* ── Motion ───────────────────────────────────────────────────── */
+  --ease: cubic-bezier(.22,.61,.36,1);
+  --t-fast: 150ms;
+  --t-mid:  200ms;
+  --t-slow: 500ms;
+  --t-tone: 900ms;   /* cream ↔ jade ground changes                     */
+
+  /* Depth of the ramp that blends one ground into the next. Always
+     smaller than --sec-y, so the ramp lands in a neighbour's padding
+     and no text ever renders over a partial ground. */
+  --bleed: clamp(48px, 6.5vw, 100px);
+
+  /* ── Materials as data URIs ───────────────────────────────────── */
+  /* BREEZE BLOCK: 44×44 tile — cream field, jade circle r13 centred,
+     jade circles r6.5 at each corner. */
+  --breeze: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' fill='%23F4F1EA'/%3E%3Cg fill='%230F2E2A'%3E%3Ccircle cx='22' cy='22' r='13'/%3E%3Ccircle cx='0' cy='0' r='6.5'/%3E%3Ccircle cx='44' cy='0' r='6.5'/%3E%3Ccircle cx='0' cy='44' r='6.5'/%3E%3Ccircle cx='44' cy='44' r='6.5'/%3E%3C/g%3E%3C/svg%3E");
+  /* TERRAZZO: low-contrast speckle in muted jade, terracotta, warm grey. */
+  --terrazzo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cg fill='%230F2E2A' opacity='.13'%3E%3Cellipse cx='14' cy='22' rx='4' ry='2.6' transform='rotate(28 14 22)'/%3E%3Cellipse cx='96' cy='9' rx='2.8' ry='4.2' transform='rotate(-14 96 9)'/%3E%3Cellipse cx='150' cy='58' rx='4.6' ry='2.4' transform='rotate(52 150 58)'/%3E%3Cellipse cx='58' cy='104' rx='3.2' ry='4.4' transform='rotate(11 58 104)'/%3E%3Cellipse cx='128' cy='140' rx='4.2' ry='2.2' transform='rotate(-36 128 140)'/%3E%3Cellipse cx='30' cy='160' rx='2.6' ry='3.8' transform='rotate(64 30 160)'/%3E%3Cellipse cx='172' cy='112' rx='3.4' ry='2.2' transform='rotate(19 172 112)'/%3E%3C/g%3E%3Cg fill='%23C8763C' opacity='.17'%3E%3Cellipse cx='68' cy='38' rx='3.6' ry='2.2' transform='rotate(-22 68 38)'/%3E%3Cellipse cx='166' cy='24' rx='2.4' ry='3.4' transform='rotate(41 166 24)'/%3E%3Cellipse cx='104' cy='84' rx='4.4' ry='2.6' transform='rotate(7 104 84)'/%3E%3Cellipse cx='20' cy='76' rx='2.6' ry='3.6' transform='rotate(-51 20 76)'/%3E%3Cellipse cx='84' cy='158' rx='3.8' ry='2.4' transform='rotate(33 84 158)'/%3E%3Cellipse cx='142' cy='96' rx='2.4' ry='3.2' transform='rotate(-9 142 96)'/%3E%3C/g%3E%3Cg fill='%23514C43' opacity='.11'%3E%3Cellipse cx='44' cy='58' rx='3.4' ry='2.4' transform='rotate(16 44 58)'/%3E%3Cellipse cx='118' cy='46' rx='2.6' ry='3.8' transform='rotate(-44 118 46)'/%3E%3Cellipse cx='8' cy='126' rx='4.2' ry='2.6' transform='rotate(58 8 126)'/%3E%3Cellipse cx='74' cy='128' rx='2.8' ry='3.4' transform='rotate(-17 74 128)'/%3E%3Cellipse cx='156' cy='170' rx='3.6' ry='2.2' transform='rotate(24 156 170)'/%3E%3Cellipse cx='110' cy='118' rx='2.4' ry='3.6' transform='rotate(-63 110 118)'/%3E%3Cellipse cx='36' cy='96' rx='2.2' ry='2.8' transform='rotate(9 36 96)'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ═══ RESET AND BASE ═══════════════════════════════════════════════ */
+
+*,*::before,*::after{ box-sizing:border-box; }
+html{
+  -webkit-text-size-adjust:100%;
+  scroll-behavior:smooth;
+  /* clip, not hidden — hidden on the root breaks position:sticky */
+  overflow-x:clip;
+}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:var(--fs-body);
+  line-height:1.62;
+  overflow-x:clip;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  transition:background-color var(--t-tone) var(--ease);
+}
+body[data-tone="jade"]{ background:var(--jade); }
+
+img,svg,video{ max-width:100%; height:auto; }
+img{ display:block; }
+
+h1,h2,h3,h4{
+  font-family:var(--f-display);
+  font-weight:700;
+  letter-spacing:-0.025em;
+  line-height:1.06;
+  margin:0;
+  text-wrap:balance;
+}
+h1{ font-size:var(--fs-h1); letter-spacing:-0.03em; }
+h2{ font-size:var(--fs-h2); }
+h3{ font-size:var(--fs-h3); letter-spacing:-0.02em; line-height:1.18; }
+p{ margin:0 0 1.1em; max-width:var(--measure); text-wrap:pretty; }
+p:last-child{ margin-bottom:0; }
+ul,ol{ margin:0; padding:0; }
+strong,b{ font-weight:600; }
+
+a{ color:inherit; }
+
+/* Focus ring — terracotta, visible on every ground.
+   :focus first so engines without :focus-visible still show a ring. */
+:focus{
+  outline:2px solid var(--terra);
+  outline-offset:3px;
+}
+:focus:not(:focus-visible){ outline:none; }
+:focus-visible{
+  outline:2px solid var(--terra);
+  outline-offset:3px;
+  border-radius:2px;
+}
+.on-jade :focus-visible,
+section.jade :focus-visible{ outline-color:var(--terra-jade); }
+
+::selection{ background:var(--terra); color:var(--ground); }
+
+/* ═══ LAYOUT PRIMITIVES ════════════════════════════════════════════ */
+
+.wrap{
+  width:100%;
+  max-width:var(--wrap);
+  margin-inline:auto;
+  padding-inline:var(--gutter);
+}
+section{ padding-block:var(--sec-y); position:relative; }
+.sec-head{ margin-bottom:clamp(32px,4vw,56px); }
+.sec-head p{ font-size:var(--fs-lead); line-height:1.45; color:var(--ink-soft); margin-top:.7em; }
+.jade .sec-head p{ color:var(--on-jade-soft); }
+
+/* Institutional uppercase label — 11px mono, 0.2em tracking. */
+.label{
+  font-family:var(--f-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--terra-deep);
+  display:block;
+  margin-bottom:1.15em;
+}
+.jade .label{ color:var(--terra-jade); }
+.label--quiet{ color:var(--ink-soft); }
+.jade .label--quiet{ color:var(--on-jade-soft); }
+
+.rule{ height:1px; background:var(--rule); border:0; margin:0; }
+.jade .rule{ background:var(--rule-jade); }
+
+.mono{ font-family:var(--f-mono); font-size:.8125rem; letter-spacing:.02em; }
+.num{ font-variant-numeric:tabular-nums; font-feature-settings:"tnum" 1; }
+
+.visually-hidden{
+  position:absolute!important; width:1px; height:1px;
+  padding:0; margin:-1px; overflow:hidden;
+  clip-path:inset(50%); white-space:nowrap; border:0;
+}
+
+/* ═══ FULL-BLEED JADE SECTIONS ═════════════════════════════════════ */
+
+section.jade{
+  background:var(--jade);
+  color:var(--on-jade);
+  isolation:isolate;
+}
+section.jade h1,section.jade h2,section.jade h3{ color:var(--on-jade); }
+section.raised{ background:var(--raised); }
+
+/* ── GROUND-TO-GROUND BLEED ────────────────────────────────────────
+   A section carries its own colour a little way into the section
+   above and below it, so scrolling across a boundary reads as the
+   ground darkening rather than as a ruled line. The ramp sits
+   entirely within the neighbour's vertical padding.               */
+section.jade::before,  section.jade::after,
+section.raised::before, section.raised::after,
+.ftr::before{
+  content:""; position:absolute; left:0; right:0;
+  height:var(--bleed); z-index:0; pointer-events:none;
+}
+/* Each ramp is declared twice: sRGB first, then the same ramp
+   interpolated in oklab, which keeps cream→jade out of the muddy
+   olive that sRGB passes through. Older engines take the first. */
+section.jade::before{
+  top:calc(var(--bleed) * -1);
+  background:linear-gradient(to bottom, transparent, var(--jade));
+  background:linear-gradient(to bottom in oklab, transparent, var(--jade));
+}
+section.jade::after{
+  bottom:calc(var(--bleed) * -1);
+  background:linear-gradient(to top, transparent, var(--jade));
+  background:linear-gradient(to top in oklab, transparent, var(--jade));
+}
+section.raised::before{
+  top:calc(var(--bleed) * -1);
+  background:linear-gradient(to bottom, transparent, var(--raised));
+  background:linear-gradient(to bottom in oklab, transparent, var(--raised));
+}
+section.raised::after{
+  bottom:calc(var(--bleed) * -1);
+  background:linear-gradient(to top, transparent, var(--raised));
+  background:linear-gradient(to top in oklab, transparent, var(--raised));
+}
+.ftr{ position:relative; }
+.ftr::before{
+  top:calc(var(--bleed) * -1);
+  background:linear-gradient(to bottom, transparent, var(--jade));
+  background:linear-gradient(to bottom in oklab, transparent, var(--jade));
+}
+/* Where two jade sections meet there is no boundary to soften. */
+.no-bleed-bottom::after,
+.no-bleed-top::before{ display:none; }
+
+/* MATERIAL — breeze block, faded rather than cut off at the edge.
+   Two mask layers, intersected: a radial that thins the screen away
+   from its dense corner, and a vertical fade that clears the top and
+   bottom bands so the texture does not start on the same line the
+   ground ramp finishes on. */
+.mat-breeze{
+  position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background-image:var(--breeze);
+  background-size:44px 44px;
+  opacity:.10;
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0, var(--mask-on) calc(var(--bleed) + 56px),
+                    var(--mask-on) calc(100% - var(--bleed) - 56px), transparent 100%),
+    radial-gradient(115% 88% at 82% 0%, var(--mask-on) 8%, var(--mask-mid) 46%, transparent 82%);
+  -webkit-mask-composite:source-in;
+  mask-image:
+    linear-gradient(to bottom, transparent 0, var(--mask-on) calc(var(--bleed) + 56px),
+                    var(--mask-on) calc(100% - var(--bleed) - 56px), transparent 100%),
+    radial-gradient(115% 88% at 82% 0%, var(--mask-on) 8%, var(--mask-mid) 46%, transparent 82%);
+  mask-composite:intersect;
+}
+/* MATERIAL — louvre light. Oversized child, transform-only sweep. */
+.mat-louvre{
+  position:absolute; inset:0; z-index:-1; pointer-events:none; overflow:hidden;
+}
+.mat-louvre::before{
+  content:""; position:absolute; inset:-40% -25%;
+  background:repeating-linear-gradient(178deg, var(--shade) 0 3px, transparent 3px 26px);
+  -webkit-mask-image:linear-gradient(112deg, transparent 4%, var(--mask-on) 34%, var(--mask-on) 54%, transparent 84%);
+          mask-image:linear-gradient(112deg, transparent 4%, var(--mask-on) 34%, var(--mask-on) 54%, transparent 84%);
+  animation:louvre-sweep 24s var(--ease) infinite alternate;
+  will-change:transform;
+}
+@keyframes louvre-sweep{
+  from{ transform:translate3d(-7%,0,0); }
+  to  { transform:translate3d(7%,0,0); }
+}
+/* MATERIAL — terrazzo speckle on cream. */
+.mat-terrazzo{
+  position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background-image:var(--terrazzo);
+  background-size:180px 180px;
+  opacity:.72;
+  -webkit-mask-image:linear-gradient(transparent 0, var(--mask-on) calc(var(--bleed) + 40px), var(--mask-on) 72%, transparent 100%);
+          mask-image:linear-gradient(transparent 0, var(--mask-on) calc(var(--bleed) + 40px), var(--mask-on) 72%, transparent 100%);
+}
+section.jade > .wrap{ position:relative; z-index:1; }
+
+/* ═══ BUTTONS ══════════════════════════════════════════════════════ */
+/* Background shift over 150ms plus a 1px lift. No scale, no shadow bloom. */
+
+.btn{
+  display:inline-flex; align-items:center; gap:.6em;
+  font-family:var(--f-mono); font-size:.8125rem; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase;
+  padding:1.02em 1.6em;
+  border:1px solid transparent;
+  text-decoration:none; cursor:pointer;
+  transition:background-color var(--t-fast) var(--ease),
+             border-color var(--t-fast) var(--ease),
+             color var(--t-fast) var(--ease),
+             transform var(--t-fast) var(--ease);
+}
+.btn:hover{ transform:translateY(-1px); }
+.btn:active{ transform:translateY(0); }
+
+.btn--primary{ background:var(--terra-deep); color:var(--ground); }
+.btn--primary:hover{ background:var(--jade); }
+
+.btn--ghost{ background:transparent; color:var(--ink); border-color:var(--rule); }
+.btn--ghost:hover{ background:var(--raised); border-color:var(--terra); }
+
+.jade .btn--primary{ background:var(--terra); color:var(--jade); }
+.jade .btn--primary:hover{ background:var(--on-jade); }
+.jade .btn--ghost{ color:var(--on-jade); border-color:var(--rule-jade); }
+.jade .btn--ghost:hover{ background:var(--jade-soft); border-color:var(--terra-jade); }
+
+.btn-row{ display:flex; flex-wrap:wrap; gap:14px; margin-top:clamp(28px,3.4vw,40px); }
+
+/* ═══ LINKS ════════════════════════════════════════════════════════ */
+/* Underline draws from left to right over 200ms. */
+
+.lnk{
+  color:var(--terra-deep); text-decoration:none;
+  font-weight:600; position:relative;
+  background-image:linear-gradient(var(--terra-deep),var(--terra-deep));
+  background-repeat:no-repeat;
+  background-position:0 100%;
+  background-size:0% 1px;
+  transition:background-size var(--t-mid) var(--ease);
+  padding-bottom:2px;
+}
+.lnk:hover,.lnk:focus-visible{ background-size:100% 1px; }
+.jade .lnk{
+  color:var(--terra-jade);
+  background-image:linear-gradient(var(--terra-jade),var(--terra-jade));
+}
+.lnk::after{ content:" \2192"; font-family:var(--f-mono); }
+.lnk--plain::after{ content:none; }
+
+/* ═══ CARDS ════════════════════════════════════════════════════════ */
+/* Hairline shifts to terracotta, 2px lift. */
+
+.card{
+  background:var(--ground);
+  border:1px solid var(--rule);
+  padding:clamp(22px,2.6vw,34px);
+  transition:border-color var(--t-mid) var(--ease), transform var(--t-mid) var(--ease);
+}
+.card:hover,.card:focus-within{ border-color:var(--terra); transform:translateY(-2px); }
+.raised .card{ background:var(--ground); }
+.jade .card{ background:var(--jade-soft); border-color:var(--rule-jade); color:var(--on-jade); }
+.jade .card:hover{ border-color:var(--terra); }
+.card h3{ margin-bottom:.5em; }
+.card p{ color:var(--ink-soft); font-size:var(--fs-body); }
+.jade .card p{ color:var(--on-jade-soft); }
+
+.grid{ display:grid; gap:clamp(14px,1.6vw,20px); }
+.grid--3{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+.grid--2{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+
+/* ═══ HEADER ═══════════════════════════════════════════════════════ */
+
+.hdr{
+  position:sticky; top:0; z-index:60;
+  background:transparent;
+  border-bottom:1px solid transparent;
+  transition:background-color var(--t-tone) var(--ease),
+             border-color var(--t-tone) var(--ease),
+             color var(--t-tone) var(--ease),
+             padding var(--t-slow) var(--ease);
+  padding-block:clamp(18px,2.2vw,28px);
+}
+.hdr__in{
+  display:flex; align-items:center; justify-content:space-between; gap:20px;
+}
+.hdr.is-condensed{
+  background:var(--ground);
+  border-bottom-color:var(--rule);
+  padding-block:11px;
+}
+body[data-tone="jade"] .hdr.is-condensed{
+  background:var(--jade); border-bottom-color:var(--rule-jade);
+}
+body[data-tone="jade"] .hdr{ color:var(--on-jade); }
+
+.brand{
+  font-family:var(--f-display); font-weight:700; font-size:1.28rem;
+  letter-spacing:-0.03em; text-decoration:none; color:inherit;
+  display:inline-flex; align-items:baseline; gap:.5em;
+}
+.brand__mark{
+  width:11px; height:11px; background:var(--terra); flex:none;
+  border-radius:50%; align-self:center;
+}
+.brand small{
+  font-family:var(--f-mono); font-size:var(--fs-label); font-weight:500;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--ink-soft);
+  transition:color var(--t-tone) var(--ease);
+}
+body[data-tone="jade"] .brand small{ color:var(--on-jade-soft); }
+
+.nav{ display:flex; align-items:center; gap:clamp(14px,1.8vw,26px); }
+.nav ul{ display:flex; flex-wrap:wrap; gap:clamp(12px,1.6vw,24px); list-style:none; }
+.nav a{
+  font-family:var(--f-mono); font-size:.75rem; font-weight:500;
+  letter-spacing:.11em; text-transform:uppercase; text-decoration:none;
+  color:var(--ink-soft);
+  background-image:linear-gradient(var(--terra),var(--terra));
+  background-repeat:no-repeat; background-position:0 100%; background-size:0% 1px;
+  transition:background-size var(--t-mid) var(--ease), color var(--t-tone) var(--ease);
+  padding-bottom:3px;
+}
+.nav a:hover,.nav a:focus-visible{ color:var(--ink); background-size:100% 1px; }
+body[data-tone="jade"] .nav a{ color:var(--on-jade-soft); }
+body[data-tone="jade"] .nav a:hover{ color:var(--on-jade); }
+.hdr .btn{ padding:.72em 1.15em; font-size:.6875rem; }
+
+/* Menu button exists only when JavaScript is running. */
+.menu-btn{ display:none; }
+.js .menu-btn{
+  display:none; background:transparent; border:1px solid var(--rule);
+  color:inherit; font-family:var(--f-mono); font-size:.6875rem; font-weight:600;
+  letter-spacing:.2em; text-transform:uppercase; padding:.8em 1.05em; cursor:pointer;
+  transition:border-color var(--t-fast) var(--ease);
+}
+.js .menu-btn:hover{ border-color:var(--terra); }
+body[data-tone="jade"] .menu-btn{ border-color:var(--rule-jade); }
+
+/* ═══ SCROLL PROGRESS RAIL ═════════════════════════════════════════ */
+
+.rail{ display:none; }
+.js .rail{
+  display:block;
+  position:fixed; left:14px; top:0; bottom:0; width:2px; z-index:55;
+  pointer-events:none;
+}
+.rail__track{ position:absolute; inset:0; background:var(--rule);
+  transition:background-color var(--t-tone) var(--ease); }
+body[data-tone="jade"] .rail__track{ background:var(--rule-jade); }
+.rail__fill{
+  position:absolute; inset:0; background:var(--terra);
+  transform:scaleY(0); transform-origin:top center;
+}
+.rail__now{
+  position:absolute; left:12px; top:50%;
+  transform-origin:left center;
+  transform:rotate(90deg) translateY(-50%);
+  white-space:nowrap;
+  font-family:var(--f-mono); font-size:var(--fs-label); font-weight:600;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--ink-soft);
+  transition:opacity var(--t-slow) var(--ease), color var(--t-tone) var(--ease);
+}
+body[data-tone="jade"] .rail__now{ color:var(--on-jade-soft); }
+
+/* ═══ SKIP LINK ════════════════════════════════════════════════════ */
+
+.skip{
+  position:absolute; left:8px; top:-100px; z-index:99;
+  background:var(--terra-deep); color:var(--ground);
+  padding:.8em 1.2em; text-decoration:none;
+  font-family:var(--f-mono); font-size:.75rem; letter-spacing:.15em; text-transform:uppercase;
+}
+.skip:focus{ top:8px; }
+
+/* ═══ CURSOR GLOW (jade sections only) ═════════════════════════════ */
+
+.cursor-glow{ display:none; }
+.js .cursor-glow{
+  display:block; position:fixed; left:0; top:0; z-index:1;
+  width:620px; height:620px; margin:-310px 0 0 -310px;
+  border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle, var(--glow) 0%, transparent 66%);
+  opacity:0; transition:opacity 700ms var(--ease);
+  mix-blend-mode:screen;
+}
+body[data-tone="jade"] .cursor-glow.is-on{ opacity:.5; }
+
+/* ═══ REVEAL — hidden state applied only when JavaScript is live ═══ */
+
+.js .reveal{
+  opacity:0;
+  transform:translate3d(0,16px,0);
+  transition:opacity 500ms var(--ease), transform 500ms var(--ease);
+  transition-delay:var(--d,0ms);
+}
+.js .reveal.is-in{ opacity:1; transform:none; }
+
+/* ═══ HERO ═════════════════════════════════════════════════════════ */
+/* Sized to its content. Never 100vh. */
+
+.hero{ padding-top:clamp(40px,5vw,72px); padding-bottom:clamp(56px,7vw,104px); }
+.hero__grid{
+  display:grid; gap:clamp(32px,4vw,64px);
+  grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
+  align-items:start;
+}
+.hero h1{ max-width:15ch; }
+.hero__lead{
+  font-size:var(--fs-lead); line-height:1.5; color:var(--ink-soft);
+  margin-top:clamp(20px,2.4vw,30px); max-width:52ch;
+}
+.hero__facts{
+  list-style:none; display:grid; gap:0;
+  margin-top:clamp(34px,4vw,52px);
+  border-top:1px solid var(--rule);
+}
+.hero__facts li{
+  padding:.95em 0; border-bottom:1px solid var(--rule);
+  display:flex; gap:1em; align-items:baseline;
+  font-size:var(--fs-body); color:var(--ink-soft);
+}
+.hero__facts b{
+  font-family:var(--f-mono); font-size:var(--fs-label); font-weight:600;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--terra-deep);
+  flex:none; width:8.5em;
+}
+
+/* Hero jade panel carrying the breeze block and louvre */
+.hero__panel{
+  position:relative; overflow:hidden;
+  background:var(--jade); color:var(--on-jade);
+  padding:clamp(26px,3vw,40px);
+  min-height:340px;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  isolation:isolate;
+}
+.hero__panel .label{ color:var(--terra-jade); }
+.hero__panel p{ color:var(--on-jade-soft); font-size:var(--fs-body); margin:0; }
+.hero__panel h3{ color:var(--on-jade); margin-bottom:.55em; }
+.hero__panel > *{ position:relative; z-index:2; }
+.hero__screen{
+  position:absolute; inset:-16px; z-index:0; pointer-events:none;
+  /* Static breeze-block tile. Replaced by individually drifting
+     perforations once JavaScript has built them. */
+  background-image:var(--breeze);
+  background-size:44px 44px;
+  opacity:.11;
+  -webkit-mask-image:radial-gradient(120% 100% at 78% 6%, var(--mask-on) 6%, var(--mask-soft) 44%, transparent 80%);
+          mask-image:radial-gradient(120% 100% at 78% 6%, var(--mask-on) 6%, var(--mask-soft) 44%, transparent 80%);
+}
+.hero__screen.is-live{ background-image:none; background-color:var(--ground); }
+.hero__screen svg{ width:100%; height:100%; display:block; }
+.hero__screen circle{ fill:var(--jade); }
+.hero__panel .mat-louvre{ z-index:1; }
+
+/* ═══ SHOWPIECE 1 — LIVE AUTOMATION PIPELINE ═══════════════════════ */
+
+.pipe__stage{
+  position:relative;
+  border:1px solid var(--rule-jade);
+  background:var(--jade-soft);
+  padding:clamp(14px,1.8vw,24px);
+}
+.pipe__scroll{ overflow-x:auto; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; }
+.pipe__scroll svg{ display:block; width:100%; min-width:760px; height:auto; }
+
+.pipe-node rect{
+  fill:var(--jade);
+  stroke:var(--rule-jade);
+  stroke-width:1;
+  transition:stroke var(--t-mid) var(--ease), fill var(--t-mid) var(--ease);
+}
+.pipe-node text{
+  font-family:var(--f-display); font-weight:600; font-size:19px;
+  fill:var(--on-jade); letter-spacing:-0.01em;
+}
+.pipe-node tspan.idx{
+  font-family:var(--f-mono); font-size:12px; font-weight:600;
+  letter-spacing:.2em; fill:var(--terra-jade);
+}
+.pipe-node{ cursor:pointer; transform:translateY(var(--ny,0px));
+  transition:transform var(--t-mid) var(--ease), opacity 460ms var(--ease); }
+.pipe-node:hover,.pipe-node:focus-visible,.pipe-node.is-active{ --ny:-3px; }
+/* Nodes settle into place in flow order on first view. JavaScript adds
+   is-placed; with JavaScript off the diagram is simply already there. */
+.js .pipe-node{ opacity:0; --ny:12px; }
+.js .pipe-node.is-placed{ opacity:1; --ny:0px; }
+.pipe-node:hover rect,.pipe-node:focus-visible rect,.pipe-node.is-active rect{
+  stroke:var(--terra); fill:var(--jade);
+}
+.pipe-node:focus{ outline:none; }
+.pipe-node:focus-visible rect{ stroke:var(--terra-jade); stroke-width:2; }
+.pipe-edge{
+  fill:none; stroke:var(--rule-jade); stroke-width:1.5;
+  transition:stroke var(--t-mid) var(--ease);
+}
+.pipe-edge.is-lit{ stroke:var(--terra); }
+.pipe-packet{ fill:var(--terra); }
+
+.pipe__caption{ display:none; }
+.js .pipe__caption{
+  display:block; margin-top:clamp(16px,2vw,24px);
+  border-top:1px solid var(--rule-jade); padding-top:1.1em;
+  min-height:5.2em;
+}
+.pipe__caption .label{ margin-bottom:.7em; }
+.pipe__caption p{ color:var(--on-jade); font-size:var(--fs-body); max-width:62ch; }
+
+.pipe__list{
+  margin-top:clamp(16px,2vw,24px);
+  display:grid; gap:clamp(14px,1.8vw,22px);
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+.js .pipe__list{ display:none; }
+.pipe__list dt{
+  font-family:var(--f-mono); font-size:var(--fs-label); font-weight:600;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--terra-jade);
+  margin-bottom:.55em;
+}
+.pipe__list dd{ margin:0 0 1.4em; color:var(--on-jade-soft); font-size:var(--fs-body); }
+
+/* ═══ WHAT WE BUILD ════════════════════════════════════════════════ */
+
+.build__list{ list-style:none; border-top:1px solid var(--rule); }
+.build__row{
+  display:grid; gap:clamp(10px,2vw,32px);
+  grid-template-columns:3.2rem minmax(0,1fr) minmax(0,1.15fr);
+  padding:clamp(24px,2.8vw,38px) 0;
+  border-bottom:1px solid var(--rule);
+  transition:border-color var(--t-mid) var(--ease);
+}
+.build__row:hover{ border-bottom-color:var(--terra); }
+.build__idx{
+  font-family:var(--f-mono); font-size:var(--fs-label); font-weight:600;
+  letter-spacing:.2em; color:var(--terra-deep); padding-top:.5em;
+}
+.build__row h3{ align-self:start; }
+.build__out{
+  font-size:var(--fs-body); color:var(--ink); font-weight:600;
+  border-left:2px solid var(--terra); padding-left:1em; margin-bottom:.7em;
+}
+.build__meta{
+  font-family:var(--f-mono); font-size:.75rem; letter-spacing:.06em;
+  color:var(--ink-soft); margin-top:.9em; display:block;
+}
+
+/* ═══ PROOF — horizontal strip driven by vertical scroll ═══════════ */
+
+.proof__wrap{ position:relative; }
+.proof__pin{ position:relative; }
+/* Default: a plain horizontal scroller. Works with JavaScript off, on touch,
+   and under reduced motion. JavaScript upgrades it to a pinned strip driven by
+   vertical scroll only when there is room for it. */
+.proof__viewport{
+  overflow-x:auto; overflow-y:hidden;
+  overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:2px;
+}
+.proof__panel{ scroll-snap-align:start; }
+.js .proof__wrap.is-pinned .proof__pin{ position:sticky; top:clamp(92px,12vh,140px); }
+.js .proof__wrap.is-pinned .proof__viewport{ overflow:hidden; scroll-snap-type:none; }
+.proof__track{
+  display:flex; gap:clamp(16px,2vw,26px);
+  will-change:transform;
+}
+.proof__panel{
+  flex:0 0 min(560px, 82vw);
+  background:var(--jade-soft);
+  border:1px solid var(--rule-jade);
+  padding:clamp(24px,2.8vw,38px);
+  display:flex; flex-direction:column;
+}
+.proof__panel h3{ margin-bottom:.6em; }
+.proof__panel p{ color:var(--on-jade-soft); font-size:var(--fs-body); }
+.proof__tools{ list-style:none; margin-top:auto; padding-top:1.6em; display:flex; flex-wrap:wrap; gap:8px; }
+.proof__tools li{
+  font-family:var(--f-mono); font-size:.8125rem; letter-spacing:.06em;
+  border:1px solid var(--rule-jade); padding:.42em .7em; color:var(--on-jade);
+}
+.proof__bar{
+  margin-top:clamp(18px,2.2vw,26px);
+  height:2px; background:var(--rule-jade); position:relative;
+}
+.proof__bar span{
+  position:absolute; inset:0; background:var(--terra);
+  transform:scaleX(.34); transform-origin:left center;
+}
+.proof__stats{
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(16px,2.4vw,34px);
+  margin-top:clamp(34px,4vw,54px);
+  border-top:1px solid var(--rule-jade); padding-top:clamp(24px,3vw,38px);
+}
+.stat b{
+  display:block; font-family:var(--f-display); font-weight:700;
+  font-size:clamp(2.6rem,1.6rem + 4vw,4.4rem); line-height:.92;
+  letter-spacing:-0.04em; color:var(--terra-jade);
+  font-variant-numeric:tabular-nums;
+}
+.stat span{ display:block; margin-top:.7em; color:var(--on-jade-soft); font-size:var(--fs-body); max-width:24ch; }
+.stat em{ font-style:normal; font-size:.55em; letter-spacing:-0.02em; }
+
+/* ═══ SHOWPIECE 2 — HOURS RECLAIMED CALCULATOR ════════════════════ */
+
+.calc{
+  display:grid; gap:clamp(20px,2.6vw,40px);
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  align-items:stretch;
+}
+.calc__controls{
+  background:var(--ground); border:1px solid var(--rule);
+  padding:clamp(24px,2.8vw,38px);
+}
+.calc__field{ padding-block:clamp(16px,1.8vw,22px); border-bottom:1px solid var(--rule); }
+.calc__field:last-of-type{ border-bottom:0; padding-bottom:0; }
+.calc__field:first-of-type{ padding-top:0; }
+.calc__top{ display:flex; align-items:baseline; justify-content:space-between; gap:1em; margin-bottom:.9em; }
+.calc__field label{
+  font-family:var(--f-mono); font-size:var(--fs-label); font-weight:600;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--ink-soft);
+}
+.calc__val{
+  font-family:var(--f-display); font-weight:700; font-size:1.5rem;
+  letter-spacing:-0.02em; color:var(--ink); font-variant-numeric:tabular-nums;
+  flex:none;
+}
+
+/* Range input — terracotta thumb, cream track, visible focus. */
+input[type=range]{
+  -webkit-appearance:none; appearance:none;
+  width:100%; background:transparent; margin:0; cursor:pointer;
+}
+input[type=range]:focus{ outline:none; }
+input[type=range]::-webkit-slider-runnable-track{
+  height:3px; background:var(--rule); border:0;
+}
+input[type=range]::-moz-range-track{ height:3px; background:var(--rule); border:0; }
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none;
+  width:22px; height:22px; margin-top:-9.5px; border-radius:50%;
+  background:var(--terra-deep); border:2px solid var(--ground);
+  transition:background-color var(--t-fast) var(--ease);
+}
+input[type=range]::-moz-range-thumb{
+  width:18px; height:18px; border-radius:50%;
+  background:var(--terra-deep); border:2px solid var(--ground);
+}
+input[type=range]:hover::-webkit-slider-thumb{ background:var(--jade); }
+input[type=range]:hover::-moz-range-thumb{ background:var(--jade); }
+input[type=range]:focus-visible::-webkit-slider-thumb{ outline:2px solid var(--terra); outline-offset:2px; }
+input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra); outline-offset:2px; }
+.calc__scale{
+  display:flex; justify-content:space-between;
+  font-family:var(--f-mono); font-size:.6875rem; letter-spacing:.06em;
+  color:var(--ink-soft); margin-top:.7em; font-variant-numeric:tabular-nums;
+}
+
+.calc__out{
+  background:var(--jade); color:var(--on-jade);
+  padding:clamp(26px,3vw,42px); position:relative; overflow:hidden; isolation:isolate;
+  display:flex; flex-direction:column;
+}
+.calc__out > *{ position:relative; z-index:2; }
+.calc__out .label{ color:var(--terra-jade); }
+.calc__big{
+  font-family:var(--f-display); font-weight:700;
+  font-size:clamp(3rem,1.9rem + 4.6vw,5.2rem); line-height:.9;
+  letter-spacing:-0.045em; color:var(--on-jade);
+  font-variant-numeric:tabular-nums; display:block;
+}
+.calc__unit{
+  display:block; margin-top:.85em; color:var(--on-jade-soft); font-size:var(--fs-body);
+}
+.calc__second{
+  margin-top:clamp(24px,2.8vw,34px); padding-top:clamp(20px,2.4vw,28px);
+  border-top:1px solid var(--rule-jade);
+}
+.calc__mid{
+  font-family:var(--f-display); font-weight:700;
+  font-size:clamp(2rem,1.4rem + 2.4vw,3rem); line-height:1;
+  letter-spacing:-0.035em; color:var(--terra-jade);
+  font-variant-numeric:tabular-nums; display:block;
+}
+.calc__note{
+  margin-top:auto; padding-top:clamp(22px,2.6vw,32px);
+  color:var(--on-jade-soft); font-size:var(--fs-body); max-width:44ch;
+}
+.calc__cta{ margin-top:1.4em; }
+
+/* ═══ HOW IT WORKS — sticky process ═══════════════════════════════ */
+
+/* The cue column must STRETCH to the height of the steps column, or the
+   sticky child has no containing block to travel inside and never sticks. */
+.proc{ display:grid; gap:clamp(24px,3vw,56px); grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); align-items:stretch; }
+.proc__col{ position:relative; height:100%; }
+.proc__sticky{ position:sticky; top:clamp(96px,12vh,150px); }
+.proc__cue{
+  font-family:var(--f-display); font-weight:700;
+  font-size:clamp(4rem,3rem + 6vw,9rem); line-height:.84;
+  letter-spacing:-0.05em; color:var(--terra); font-variant-numeric:tabular-nums;
+  display:block;
+}
+.proc__cuelabel{
+  display:block; margin-top:.6em; font-size:var(--fs-h3);
+  font-family:var(--f-display); font-weight:600; letter-spacing:-0.02em;
+}
+.proc__dots{ list-style:none; display:flex; gap:8px; margin-top:2em; }
+.proc__dots li{ width:26px; height:2px; background:var(--rule); transition:background-color var(--t-mid) var(--ease); }
+.proc__dots li.is-on{ background:var(--terra); }
+.proc__steps{ list-style:none; }
+.proc__step{
+  padding:clamp(24px,3vw,42px) 0; border-top:1px solid var(--rule);
+}
+.proc__step:first-child{ border-top:0; padding-top:0; }
+.proc__step h3{ margin-bottom:.55em; }
+.proc__step p{ color:var(--ink-soft); }
+.proc__when{
+  font-family:var(--f-mono); font-size:var(--fs-label); font-weight:600;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--terra-deep);
+  display:block; margin-bottom:1em;
+}
+
+/* ═══ SHOWPIECE 3 — BEFORE AND AFTER ══════════════════════════════ */
+
+.ba__switch{
+  display:inline-flex; align-items:center; gap:14px;
+  background:transparent; border:1px solid var(--rule-jade);
+  padding:8px; cursor:pointer; color:inherit;
+  font-family:var(--f-mono); font-size:.75rem; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase;
+  transition:border-color var(--t-fast) var(--ease);
+}
+.ba__switch:hover{ border-color:var(--terra); }
+.ba__switch .txt{ padding-inline:.55em; }
+.ba__track{
+  width:56px; height:28px; border-radius:14px; flex:none;
+  background:var(--jade-soft); border:1px solid var(--rule-jade);
+  position:relative; transition:background-color var(--t-mid) var(--ease);
+}
+.ba__knob{
+  position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%;
+  background:var(--terra-jade); transition:transform var(--t-mid) var(--ease);
+}
+.ba__switch[aria-checked="true"] .ba__knob{ transform:translateX(28px); }
+.ba__switch[aria-checked="true"] .ba__track{ background:var(--terra-deep); }
+
+.ba__stage{ position:relative; margin-top:clamp(28px,3.4vw,44px); }
+.ba__fig{ margin:0; }
+.ba__fig figcaption{
+  font-family:var(--f-mono); font-size:var(--fs-label); font-weight:600;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--terra-jade);
+  margin-bottom:1.2em;
+}
+.ba__fig svg{ display:block; width:100%; height:auto; }
+.js .ba__stage{ display:grid; }
+.js .ba__fig{ grid-area:1/1; transition:opacity 450ms var(--ease); }
+.js .ba__fig[data-off]{ opacity:0; pointer-events:none; visibility:hidden; }
+.ba-node rect,.ba-node circle{ fill:var(--jade-soft); stroke:var(--rule-jade); stroke-width:1; }
+.ba-node text{ font-family:var(--f-mono); font-size:14px; fill:var(--on-jade); letter-spacing:.02em; }
+.ba-edge{ fill:none; stroke:var(--rule-jade); stroke-width:1.4; }
+.ba-edge.tangle{ stroke-dasharray:5 5; }
+.ba--after .ba-node rect{ stroke:var(--terra); }
+.ba--after .ba-edge{ stroke:var(--terra); }
+.ba__counts{
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(14px,2vw,28px); margin-top:clamp(26px,3vw,40px);
+  border-top:1px solid var(--rule-jade); padding-top:clamp(20px,2.4vw,30px);
+}
+.ba__count b{
+  display:block; font-family:var(--f-display); font-weight:700;
+  font-size:clamp(2rem,1.5rem + 2vw,2.9rem); line-height:1;
+  letter-spacing:-0.035em; color:var(--terra-jade); font-variant-numeric:tabular-nums;
+}
+.ba__count span{ display:block; margin-top:.6em; color:var(--on-jade-soft); font-size:var(--fs-body); }
+
+/* ═══ RISK REVERSAL ═══════════════════════════════════════════════ */
+
+.risk{ padding-block:clamp(84px,11vw,168px); }
+.risk h2{ font-size:clamp(2.25rem,1.5rem + 3.4vw,4rem); max-width:19ch; }
+.risk__lead{ font-size:var(--fs-lead); color:var(--on-jade-soft); margin-top:1em; max-width:56ch; line-height:1.45; }
+.risk__grid{
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(18px,2.4vw,34px); margin-top:clamp(44px,5vw,76px);
+}
+.risk__item{ border-top:2px solid var(--terra); padding-top:clamp(18px,2vw,26px); }
+.risk__item h3{ margin-bottom:.6em; font-size:clamp(1.125rem,1rem + .5vw,1.375rem); }
+.risk__item p{ color:var(--on-jade-soft); font-size:var(--fs-body); }
+.risk__foot{
+  margin-top:clamp(40px,4.6vw,66px); padding-top:clamp(24px,2.8vw,36px);
+  border-top:1px solid var(--rule-jade);
+  display:flex; flex-wrap:wrap; gap:20px 40px; align-items:center; justify-content:space-between;
+}
+.risk__foot p{ color:var(--on-jade); font-size:var(--fs-body); max-width:46ch; margin:0; }
+
+/* ═══ TESTIMONIALS (placeholder) ══════════════════════════════════ */
+
+.quotes{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(18px,2.4vw,32px); }
+.quote{ border-left:2px solid var(--terra); padding-left:clamp(18px,2vw,26px); }
+.quote blockquote{ margin:0; font-size:var(--fs-lead); line-height:1.42; }
+.quote figcaption{
+  margin-top:1.1em; font-family:var(--f-mono); font-size:.75rem;
+  letter-spacing:.06em; color:var(--ink-soft);
+}
+.jade .quote figcaption{ color:var(--on-jade-soft); }
+.jade .quote blockquote{ color:var(--on-jade); }
+
+/* ═══ DATA HANDLING ═══════════════════════════════════════════════ */
+
+.data__claim{
+  font-family:var(--f-display); font-weight:600;
+  font-size:clamp(1.375rem,1.1rem + 1.2vw,2rem); line-height:1.25;
+  letter-spacing:-0.025em; max-width:26ch;
+}
+.data__list{ list-style:none; display:grid; gap:0; border-top:1px solid var(--rule); }
+.data__list li{
+  padding:1.05em 0; border-bottom:1px solid var(--rule);
+  display:flex; gap:1em; align-items:baseline; color:var(--ink-soft); font-size:var(--fs-body);
+}
+.data__list li::before{
+  content:""; width:7px; height:7px; background:var(--terra); flex:none;
+  border-radius:50%; transform:translateY(-2px);
+}
+
+
+/* ═══ FOUNDERS ════════════════════════════════════════════════════ */
+/* One row per person: portrait, name, career. Sized so the faces read
+   at a glance and the roles stay scannable rather than paragraphed. */
+
+.team{ list-style:none; display:grid; gap:0; margin-top:clamp(26px,3vw,40px); }
+
+.fdr{
+  display:grid;
+  grid-template-columns:clamp(132px,15vw,176px) minmax(0,1fr);
+  gap:clamp(20px,3vw,44px);
+  align-items:start;
+  padding:clamp(28px,3.4vw,46px) 0;
+  border-top:1px solid var(--rule-jade);
+}
+.fdr:first-child{ border-top:0; padding-top:0; }
+
+.fdr__shot{
+  display:block; aspect-ratio:1; border-radius:50%; overflow:hidden;
+  background:var(--jade-soft); border:1px solid var(--rule-jade);
+  transition:border-color var(--t-mid) var(--ease);
+}
+.fdr:hover .fdr__shot{ border-color:var(--terra); }
+.fdr__shot img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+.fdr__n{
+  font-size:clamp(1.375rem,1.15rem + .85vw,1.875rem);
+  margin-bottom:.85em; color:var(--on-jade);
+}
+.fdr__roles{ list-style:none; display:grid; gap:1.15em; }
+.fdr__roles li{ display:grid; gap:.22em; }
+/* Title and employer carry equal weight — same family, same size, same
+   weight. Only the colour separates them. The years stay subordinate. */
+.fdr__roles b,
+.fdr__co{
+  font-family:var(--f-display); font-weight:600; font-size:var(--fs-body);
+  letter-spacing:-0.015em; line-height:1.25;
+}
+.fdr__roles b{ color:var(--on-jade); }
+.fdr__co{ color:var(--terra-jade); }
+.fdr__at{ display:flex; align-items:baseline; gap:.65em; flex-wrap:wrap; }
+.fdr__yr{
+  font-family:var(--f-mono); font-size:.75rem; font-weight:500;
+  letter-spacing:.06em; color:var(--on-jade-soft); white-space:nowrap;
+}
+.fdr__edu{
+  margin:1.6em 0 0; padding-top:1.15em;
+  border-top:1px solid var(--rule-jade);
+  font-family:var(--f-mono); font-size:.8125rem; letter-spacing:.02em;
+  color:var(--on-jade-soft); max-width:none;
+}
+.fdr__edu b{
+  font-size:var(--fs-label); font-weight:600; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--terra-jade); margin-right:1em;
+}
+
+/* Two columns of roles once there is room, so the block stays compact. */
+@media (min-width:900px){
+  .fdr__roles{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.1em clamp(20px,2.4vw,40px); }
+}
+
+/* ═══ ENQUIRIES ═══════════════════════════════════════════════════ */
+
+.enq{ display:grid; gap:clamp(28px,3.4vw,60px); grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); align-items:start; }
+.enq__wa{
+  display:block; background:var(--raised); border:1px solid var(--rule);
+  padding:clamp(22px,2.6vw,32px); text-decoration:none; color:inherit;
+  transition:border-color var(--t-mid) var(--ease), transform var(--t-mid) var(--ease);
+  margin-bottom:clamp(18px,2vw,26px);
+}
+.enq__wa:hover{ border-color:var(--terra); transform:translateY(-2px); }
+.enq__wa h3{ margin-bottom:.45em; }
+.enq__wa p{ color:var(--ink-soft); font-size:var(--fs-body); margin:0; }
+.enq__meta{ font-size:var(--fs-body); color:var(--ink-soft); }
+.enq__meta b{ color:var(--ink); }
+
+.form{ display:grid; gap:0; }
+.field{ position:relative; padding-top:1.5em; margin-bottom:1.5em; }
+.field label{
+  position:absolute; top:0; left:0;
+  font-family:var(--f-mono); font-size:var(--fs-label); font-weight:600;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--ink-soft);
+  transition:color var(--t-mid) var(--ease), transform var(--t-mid) var(--ease);
+  transform-origin:left bottom;
+}
+.field:focus-within label{ color:var(--terra-deep); transform:translateY(-2px); }
+.field input,.field textarea{
+  width:100%; font-family:var(--f-body); font-size:var(--fs-body); color:var(--ink);
+  background:transparent; border:0; border-bottom:1px solid var(--rule);
+  padding:.6em 0; border-radius:0;
+  transition:border-color var(--t-mid) var(--ease);
+}
+.field input:hover,.field textarea:hover{ border-bottom-color:var(--ink-soft); }
+.field input:focus,.field textarea:focus{ outline:none; border-bottom-color:var(--terra); border-bottom-width:2px; padding-bottom:calc(.6em - 1px); }
+.field textarea{ resize:vertical; min-height:5.4em; }
+.field .err{ display:block; margin-top:.5em; font-family:var(--f-mono); font-size:.75rem; color:var(--state-warn); }
+.form__status{
+  margin-top:1.2em; font-family:var(--f-mono); font-size:.8125rem; letter-spacing:.04em;
+  color:var(--state-ok); min-height:1.4em;
+}
+
+/* ═══ FOOTER ══════════════════════════════════════════════════════ */
+
+.ftr{ background:var(--jade); color:var(--on-jade); padding-block:clamp(48px,6vw,84px); }
+.ftr__grid{ display:grid; gap:clamp(28px,3vw,48px); grid-template-columns:minmax(0,1.2fr) repeat(2,minmax(0,1fr)); }
+.ftr h4{
+  font-family:var(--f-mono); font-size:var(--fs-label); font-weight:600;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--terra-jade); margin-bottom:1.3em;
+}
+.ftr ul{ list-style:none; display:grid; gap:.85em; }
+.ftr a{ color:var(--on-jade-soft); text-decoration:none;
+  background-image:linear-gradient(var(--terra-jade),var(--terra-jade));
+  background-repeat:no-repeat; background-position:0 100%; background-size:0% 1px;
+  transition:background-size var(--t-mid) var(--ease), color var(--t-mid) var(--ease); padding-bottom:2px; }
+.ftr a:hover{ color:var(--on-jade); background-size:100% 1px; }
+.ftr__base{
+  margin-top:clamp(38px,4.4vw,64px); padding-top:clamp(20px,2.4vw,30px);
+  border-top:1px solid var(--rule-jade);
+  display:flex; flex-wrap:wrap; gap:12px 32px; justify-content:space-between;
+  font-family:var(--f-mono); font-size:.75rem; letter-spacing:.06em; color:var(--on-jade-soft);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE — mobile-first audience, so every collapse is deliberate
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (max-width:1180px){
+  .js .rail{ display:none; }
+}
+@media (max-width:1024px){
+  .hero__grid{ grid-template-columns:1fr; }
+  .hero h1{ max-width:18ch; }
+  /* Single column: the per-step index carries the numbering, so the
+     sticky cue would only be a frozen duplicate. Drop it. */
+  .proc{ grid-template-columns:1fr; }
+  .proc__col{ display:none; }
+  .enq{ grid-template-columns:1fr; }
+  .ftr__grid{ grid-template-columns:1fr 1fr; }
+  .js .nav ul{
+    display:none; position:absolute; left:0; right:0; top:100%;
+    background:var(--ground); border-block:1px solid var(--rule);
+    flex-direction:column; gap:0; padding:8px var(--gutter) 20px;
+  }
+  body[data-tone="jade"] .js .nav ul{ background:var(--jade); border-color:var(--rule-jade); }
+  .js .nav.is-open ul{ display:flex; }
+  .js .nav ul li{ border-bottom:1px solid var(--rule); }
+  body[data-tone="jade"] .js .nav ul li{ border-color:var(--rule-jade); }
+  .js .nav ul a{ display:block; padding:1.05em 0; font-size:.8125rem; }
+  .js .menu-btn{ display:inline-flex; }
+  .js .hdr .btn--primary{ display:none; }
+  .hdr__in{ position:relative; }
+}
+@media (max-width:820px){
+  .grid--3{ grid-template-columns:1fr; }
+  .build__row{ grid-template-columns:2.6rem minmax(0,1fr); }
+  .build__row > div:last-child{ grid-column:2; }
+  .calc{ grid-template-columns:1fr; }
+  .proof__stats{ grid-template-columns:1fr; gap:26px; }
+  .stat span{ max-width:34ch; }
+  .risk__grid{ grid-template-columns:1fr; }
+  .quotes{ grid-template-columns:1fr; }
+  .ba__counts{ grid-template-columns:1fr; gap:20px; }
+  .pipe__list{ grid-template-columns:1fr; }
+  .grid--2{ grid-template-columns:1fr; }
+}
+@media (max-width:600px){
+  .fdr{ grid-template-columns:1fr; gap:18px; }
+  .fdr__shot{ width:clamp(120px,38vw,164px); }
+}
+@media (max-width:560px){
+  .ftr__grid{ grid-template-columns:1fr; }
+  .hero__facts b{ width:100%; }
+  .hero__facts li{ flex-direction:column; gap:.3em; }
+  .btn{ width:100%; justify-content:center; }
+  .btn-row{ gap:10px; }
+  .hdr .btn{ width:auto; }
+  .risk__foot .btn{ width:100%; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   REDUCED MOTION — hard requirement.
+   Everything renders in its final visible state, immediately.
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+    transition-delay:0ms!important;
+  }
+  .js .reveal{ opacity:1!important; transform:none!important; }
+  .mat-louvre::before{ animation:none!important; transform:none!important; }
+  .pipe-packet{ display:none!important; }
+  .js .cursor-glow{ display:none!important; }
+  .btn:hover,.card:hover,.enq__wa:hover{ transform:none!important; }
+  .pipe-node,.pipe-node:hover{ --ny:0px!important; }
+  .js .pipe-node{ opacity:1!important; }
+  .mat-louvre::before,.proof__track,.reveal{ will-change:auto!important; }
+  body{ transition:none!important; }
+}
+</style>
+</head>
+
+<body data-tone="cream">
+
+<a class="skip" href="#main">Skip to content</a>
+<div class="cursor-glow" aria-hidden="true"></div>
+
+<!-- Scroll position rail. Decorative; the same information is in the nav. -->
+<div class="rail" aria-hidden="true">
+  <div class="rail__track"></div>
+  <div class="rail__fill" id="railFill"></div>
+  <span class="rail__now" id="railNow">Hero</span>
+</div>
+
+<header class="hdr" id="hdr">
+  <div class="wrap hdr__in">
+    <a class="brand" href="/" aria-label="Rewire, home">
+      <span class="brand__mark" aria-hidden="true"></span>
+      Rewire <small>Automation studio</small>
+    </a>
+
+    <nav class="nav" id="nav" aria-label="Primary">
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navList">Menu</button>
+      <ul id="navList">
+        <li><a href="/what-we-build">What we build</a></li>
+        <li><a href="/work">Work</a></li>
+        <li><a href="/how-we-work">How we work</a></li>
+        <li><a href="/data-and-security">Your data</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/enquiries">Enquiries</a></li>
+      </ul>
+      <a class="btn btn--primary" href="#enquiries">Speak to us</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     1 · HERO — sized to its content, never to the viewport
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="hero" id="hero" data-rail="Hero">
+  <div class="wrap">
+    <div class="hero__grid">
+
+      <div>
+        <span class="label reveal">Automation studio</span>
+        <h1 class="reveal">Your team keeps doing the same work by hand. We make it stop.</h1>
+        <p class="hero__lead reveal">
+          We build it inside the tools you already use. Then the work runs
+          on its own.
+        </p>
+
+        <div class="btn-row reveal">
+          <a class="btn btn--primary" href="#enquiries">Speak to us</a>
+          <a class="btn btn--ghost" href="#proof">See a real example</a>
+        </div>
+
+        <ul class="hero__facts reveal">
+          <li><b>The plan</b><span>Written down and fixed before we build.</span></li>
+          <li><b>Where it runs</b><span>Your tools. Your logins. Your data.</span></li>
+          <li><b>What you keep</b><span>All of it. Files, logins and notes.</span></li>
+        </ul>
+      </div>
+
+      <aside class="hero__panel reveal">
+        <!-- Breeze block screen. Static texture until JavaScript replaces it
+             with individually drifting perforations. -->
+        <div class="hero__screen" id="heroScreen" aria-hidden="true"></div>
+        <div class="mat-louvre" aria-hidden="true"></div>
+        <span class="label">In your own tools</span>
+        <h3>We build where your work already lives.</h3>
+        <p>If we stopped tomorrow, it keeps running.</p>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     2 · SHOWPIECE — THE LIVE AUTOMATION PIPELINE
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="jade" id="pipeline" data-rail="One job, start to end">
+  <div class="mat-breeze" aria-hidden="true"></div>
+  <div class="wrap">
+
+    <div class="sec-head reveal">
+      <span class="label">One job, start to end</span>
+      <h2>This is what one automation looks like.</h2>
+      <p>A new enquiry comes in. Six steps run. Nobody opens a laptop.</p>
+    </div>
+
+    <div class="pipe__stage reveal">
+      <div class="pipe__scroll" tabindex="0" role="group" aria-label="Diagram of the six steps, scrolls sideways">
+        <svg viewBox="0 0 1490 300" role="img" aria-labelledby="pipeTitle pipeDesc" id="pipeSvg">
+          <title id="pipeTitle">A six-step automation, start to end</title>
+          <desc id="pipeDesc">New enquiry, then check it, then fill it in, then write a reply, then pass it on, then save and report. Each step passes to the next.</desc>
+
+          <g id="pipeEdges">
+            <path class="pipe-edge" data-edge="0" d="M215 80 C 245 80, 245 200, 275 200"/>
+            <path class="pipe-edge" data-edge="1" d="M465 200 C 495 200, 495 80, 525 80"/>
+            <path class="pipe-edge" data-edge="2" d="M715 80 C 745 80, 745 200, 775 200"/>
+            <path class="pipe-edge" data-edge="3" d="M965 200 C 995 200, 995 80, 1025 80"/>
+            <path class="pipe-edge" data-edge="4" d="M1215 80 C 1245 80, 1245 200, 1275 200"/>
+          </g>
+
+          <g id="pipePackets"></g>
+
+          <g class="pipe-node" data-node="0" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 1, New enquiry">
+            <rect x="25" y="38" width="190" height="84"/>
+            <text x="45" y="72"><tspan class="idx">01</tspan></text>
+            <text x="45" y="99">New enquiry</text>
+          </g>
+          <g class="pipe-node" data-node="1" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 2, Check it">
+            <rect x="275" y="158" width="190" height="84"/>
+            <text x="295" y="192"><tspan class="idx">02</tspan></text>
+            <text x="295" y="219">Check it</text>
+          </g>
+          <g class="pipe-node" data-node="2" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 3, Fill it in">
+            <rect x="525" y="38" width="190" height="84"/>
+            <text x="545" y="72"><tspan class="idx">03</tspan></text>
+            <text x="545" y="99">Fill it in</text>
+          </g>
+          <g class="pipe-node" data-node="3" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 4, Write reply">
+            <rect x="775" y="158" width="190" height="84"/>
+            <text x="795" y="192"><tspan class="idx">04</tspan></text>
+            <text x="795" y="219">Write reply</text>
+          </g>
+          <g class="pipe-node" data-node="4" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 5, Pass it on">
+            <rect x="1025" y="38" width="190" height="84"/>
+            <text x="1045" y="72"><tspan class="idx">05</tspan></text>
+            <text x="1045" y="99">Pass it on</text>
+          </g>
+          <g class="pipe-node" data-node="5" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 6, Save and report">
+            <rect x="1275" y="158" width="190" height="84"/>
+            <text x="1295" y="192"><tspan class="idx">06</tspan></text>
+            <text x="1295" y="219">Save and report</text>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Shown only when JavaScript is running. -->
+      <div class="pipe__caption" aria-live="polite">
+        <span class="label" id="pipeCaptionLabel">01 — New enquiry</span>
+        <p id="pipeCaptionText">A form, an email or a chat starts it off.</p>
+      </div>
+
+      <!-- The no-JavaScript reading of the same diagram. Hidden by CSS only
+           when the js class is present, so it is always available otherwise. -->
+      <dl class="pipe__list" id="pipeList">
+        <div><dt>01 — New enquiry</dt><dd>A form, an email or a chat starts it off.</dd></div>
+        <div><dt>02 — Check it</dt><dd>Your rules decide if it is real, and how fast to act.</dd></div>
+        <div><dt>03 — Fill it in</dt><dd>We add what your own files already know about them.</dd></div>
+        <div><dt>04 — Write reply</dt><dd>A reply is written in your words, with the right files added.</dd></div>
+        <div><dt>05 — Pass it on</dt><dd>It goes to the right person, where they will see it.</dd></div>
+        <div><dt>06 — Save and report</dt><dd>It is saved in your files and added to a weekly report.</dd></div>
+      </dl>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     3 · WHAT WE BUILD — five categories, each with a named outcome
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="what-we-build" data-rail="What we build">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="label">What we build</span>
+      <h2>Five kinds of work we take off your plate.</h2>
+    </div>
+
+    <ul class="build__list">
+      <li class="build__row reveal">
+        <span class="build__idx num">01</span>
+        <h3>Sales and marketing</h3>
+        <div>
+          <p class="build__out">Every enquiry gets an answer in minutes. Day or night.</p>        </div>
+      </li>
+      <li class="build__row reveal">
+        <span class="build__idx num">02</span>
+        <h3>Everyday jobs</h3>
+        <div>
+          <p class="build__out">Jobs move along on their own. Nobody has to chase.</p>        </div>
+      </li>
+      <li class="build__row reveal">
+        <span class="build__idx num">03</span>
+        <h3>Setting up new people</h3>
+        <div>
+          <p class="build__out">Every new client and new hire is set up the same way.</p>        </div>
+      </li>
+      <li class="build__row reveal">
+        <span class="build__idx num">04</span>
+        <h3>Staff and HR</h3>
+        <div>
+          <p class="build__out">Leave, claims and staff files sort themselves out.</p>        </div>
+      </li>
+      <li class="build__row reveal">
+        <span class="build__idx num">05</span>
+        <h3>Money and paperwork</h3>
+        <div>
+          <p class="build__out">Bills, checks and reports get done on time.</p>        </div>
+      </li>
+    </ul>
+
+    <div class="btn-row reveal">
+      <a class="lnk" href="/what-we-build">See the tools we use</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     4 · PROOF — one worked example
+     ┌──────────────────────────────────────────────────────────────┐
+     │ PLACEHOLDER FIGURES. The client and the two builds are real. │
+     │ The hour counts below (23 / 2 / 7) are working estimates and │
+     │ MUST be confirmed against the engagement record before this  │
+     │ page goes live. Do not publish unverified numbers.           │
+     └──────────────────────────────────────────────────────────────┘
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="jade" id="proof" data-rail="Proof">
+  <div class="mat-breeze" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="label">One real example</span>
+      <h2>One client. Two builds. Look at the hours.</h2>
+      <p>A gym and health group with many branches.</p>
+    </div>
+  </div>
+
+  <div class="proof__wrap" id="proofWrap">
+    <div class="proof__pin" id="proofPin">
+      <div class="wrap">
+        <div class="proof__viewport" id="proofViewport" tabindex="0" role="group" aria-label="Real example, three panels, scrolls sideways">
+          <div class="proof__track" id="proofTrack">
+
+            <article class="proof__panel">
+              <span class="label">Before</span>
+              <h3>Notes done by hand. A report no one trusted.</h3>
+              <p>Trainers sent their notes by chat. The front desk typed them in again. A long list of old leads just sat there.</p>
+            </article>
+
+            <article class="proof__panel">
+              <span class="label">The build</span>
+              <h3>A live board, and a bot that phones old leads.</h3>
+              <p>What the trainer types is the record. There is no second copy to fix. The bot works the old list on its own and books the ones who want to come in.</p>
+              <ul class="proof__tools">
+                <li>n8n</li><li>Their database</li><li>Their phone system</li>
+                <li>Voice bot</li><li>Their booking system</li>
+              </ul>
+            </article>
+
+            <article class="proof__panel">
+              <span class="label">After</span>
+              <h3>Fixing the numbers is not a job any more.</h3>
+              <p>Nobody has fixed a record by hand since we handed it over. The bot called the whole old list, and the sales team never stopped their own work.</p>
+            </article>
+
+          </div>
+        </div>
+        <div class="proof__bar" aria-hidden="true"><span id="proofBar"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="proof__stats reveal">
+      <div class="stat">
+        <b class="num" data-count="23">23</b>
+        <span>hours a week fixing notes by hand, before</span>
+      </div>
+      <div class="stat">
+        <b class="num" data-count="2">2</b>
+        <span>hours a week to check it, after</span>
+      </div>
+      <div class="stat">
+        <b class="num" data-count="7">7</b>
+        <span>days of phone calls the sales team got back</span>
+      </div>
+    </div>
+    <div class="btn-row reveal">
+      <a class="lnk" href="/work">Read the whole story</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     5 · SHOWPIECE — HOURS RECLAIMED CALCULATOR
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="raised" id="calculator" data-rail="Calculator">
+  <div class="mat-terrazzo" aria-hidden="true"></div>
+  <div class="wrap">
+
+    <div class="sec-head reveal">
+      <span class="label">Hours you get back</span>
+      <h2>Put your own numbers in.</h2>
+    </div>
+
+    <div class="calc reveal">
+
+      <form class="calc__controls" id="calcForm" novalidate>
+        <div class="calc__field">
+          <div class="calc__top">
+            <label for="calcTeam">People doing this work</label>
+            <output class="calc__val num" id="calcTeamOut" for="calcTeam">18</output>
+          </div>
+          <input type="range" id="calcTeam" name="team" min="2" max="120" step="1" value="18"
+                 aria-describedby="calcTeamScale">
+          <div class="calc__scale num" id="calcTeamScale"><span>2</span><span>120</span></div>
+        </div>
+
+        <div class="calc__field">
+          <div class="calc__top">
+            <label for="calcHours">Hours each one spends on this a week</label>
+            <output class="calc__val num" id="calcHoursOut" for="calcHours">6</output>
+          </div>
+          <input type="range" id="calcHours" name="hours" min="1" max="20" step="0.5" value="6"
+                 aria-describedby="calcHoursScale">
+          <div class="calc__scale num" id="calcHoursScale"><span>1</span><span>20</span></div>
+        </div>
+
+        <div class="calc__field">
+          <div class="calc__top">
+            <label for="calcCost">What one hour of their time costs</label>
+            <output class="calc__val num" id="calcCostOut" for="calcCost">$38</output>
+          </div>
+          <input type="range" id="calcCost" name="cost" min="8" max="180" step="1" value="38"
+                 aria-describedby="calcCostScale">
+          <div class="calc__scale num" id="calcCostScale"><span>$8</span><span>$180</span></div>
+        </div>
+      </form>
+
+      <div class="calc__out">
+        <div class="mat-louvre" aria-hidden="true"></div>
+
+        <span class="label">Hours you get back each month</span>
+        <output class="calc__big num" id="calcMonthly" for="calcTeam calcHours calcCost" aria-live="polite">304</output>
+        <span class="calc__unit">hours handed back to your team</span>
+
+        <div class="calc__second">
+          <span class="label">Money saved each year</span>
+          <output class="calc__mid num" id="calcAnnual" for="calcTeam calcHours calcCost">$138,715</output>
+        </div>
+
+        <p class="calc__note">
+          We take away about 65% of this work. Those hours go back to the
+          people you already have.
+        </p>
+        <div class="calc__cta"><a class="lnk" href="#enquiries">Talk about these numbers</a></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     6 · HOW IT WORKS — three steps. Timelines are deliberately absent:
+          they are agreed per engagement in the written scope, not promised
+          on the page.
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="how-it-works" data-rail="How it works">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="label">How it works</span>
+      <h2>Three steps, from first chat to a job that runs itself.</h2>
+    </div>
+
+    <div class="proc">
+      <div class="proc__col">
+        <div class="proc__sticky" aria-hidden="true">
+          <span class="proc__cue num" id="procCue">01</span>
+          <span class="proc__cuelabel" id="procCueLabel">Map the work</span>
+          <ul class="proc__dots" id="procDots">
+            <li class="is-on"></li><li></li><li></li>
+          </ul>
+        </div>
+      </div>
+
+      <ol class="proc__steps" id="procSteps">
+        <li class="proc__step reveal" data-step="0" data-title="Map the work">
+          <span class="proc__when num">01</span>
+          <h3>We sit with the people who actually do the work.</h3>
+          <p>You keep those notes, even if you do not hire us.</p>
+        </li>
+        <li class="proc__step reveal" data-step="1" data-title="Written plan">
+          <span class="proc__when num">02</span>
+          <h3>You get the plan in writing before we build.</h3>
+          <p>Tools, price, and what we need from you. Nothing starts until you sign.</p>
+        </li>
+        <li class="proc__step reveal" data-step="2" data-title="First build">
+          <span class="proc__when num">03</span>
+          <h3>We build one job, start to end, in your own tools.</h3>
+          <p>It runs next to your old way, so you can see the difference on real work.</p>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     7 · SHOWPIECE — BEFORE AND AFTER
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="jade no-bleed-bottom" id="before-after" data-rail="Before and after">
+  <div class="mat-breeze" aria-hidden="true"></div>
+  <div class="wrap">
+
+    <div class="sec-head reveal">
+      <span class="label">Before and after</span>
+      <h2>The same job, drawn twice.</h2>
+      <p>One enquiry, from the moment it lands to when it is filed.</p>
+    </div>
+
+    <button class="ba__switch reveal" id="baSwitch" role="switch" aria-checked="false"
+            aria-label="Switch between the job done by hand and the job done for you">
+      <span class="txt">By hand today</span>
+      <span class="ba__track" aria-hidden="true"><span class="ba__knob"></span></span>
+      <span class="txt">Automatic</span>
+    </button>
+
+    <div class="ba__stage" id="baStage">
+
+      <figure class="ba__fig ba--before" id="baBefore">
+        <figcaption>By hand today — 11 steps, 6 hand-offs</figcaption>
+        <svg viewBox="0 0 920 175" role="img" aria-label="Eleven boxes connected by crossing lines, several of them doubling back.">
+          <g class="ba-edge-group">
+            <path class="ba-edge" d="M67 37 L147 131"/>
+            <path class="ba-edge" d="M147 131 L225 37"/>
+            <path class="ba-edge" d="M225 37 L463 131"/>
+            <path class="ba-edge" d="M463 131 L383 37"/>
+            <path class="ba-edge" d="M383 37 L305 131"/>
+            <path class="ba-edge" d="M305 131 L541 37"/>
+            <path class="ba-edge" d="M541 37 L621 131"/>
+            <path class="ba-edge" d="M621 131 L699 37"/>
+            <path class="ba-edge" d="M699 37 L779 131"/>
+            <path class="ba-edge" d="M779 131 L857 37"/>
+            <path class="ba-edge tangle" d="M225 37 L779 131"/>
+            <path class="ba-edge tangle" d="M305 131 L857 37"/>
+          </g>
+          <g class="ba-node">
+            <rect x="8"   y="18"  width="118" height="38"/><text x="67"  y="42" text-anchor="middle">Enquiry</text>
+            <rect x="166" y="18"  width="118" height="38"/><text x="225" y="42" text-anchor="middle">Inbox</text>
+            <rect x="324" y="18"  width="118" height="38"/><text x="383" y="42" text-anchor="middle">Type again</text>
+            <rect x="482" y="18"  width="118" height="38"/><text x="541" y="42" text-anchor="middle">Manager</text>
+            <rect x="640" y="18"  width="118" height="38"/><text x="699" y="42" text-anchor="middle">Fix it</text>
+            <rect x="798" y="18"  width="118" height="38"/><text x="857" y="42" text-anchor="middle">File</text>
+            <rect x="88"  y="112" width="118" height="38"/><text x="147" y="136" text-anchor="middle">Group chat</text>
+            <rect x="246" y="112" width="118" height="38"/><text x="305" y="136" text-anchor="middle">Spreadsheet</text>
+            <rect x="404" y="112" width="118" height="38"/><text x="463" y="136" text-anchor="middle">Chase</text>
+            <rect x="562" y="112" width="118" height="38"/><text x="621" y="136" text-anchor="middle">2nd inbox</text>
+            <rect x="720" y="112" width="118" height="38"/><text x="779" y="136" text-anchor="middle">Report</text>
+          </g>
+        </svg>
+      </figure>
+
+      <figure class="ba__fig ba--after" id="baAfter">
+        <figcaption>Automatic — 3 steps, 1 hand-off</figcaption>
+        <svg viewBox="0 0 920 175" role="img" aria-label="Three boxes joined by one straight line: enquiry, runs by itself, right person told.">
+          <g class="ba-edge-group">
+            <path class="ba-edge" d="M250 75 L365 75"/>
+            <path class="ba-edge" d="M555 75 L670 75"/>
+          </g>
+          <g class="ba-node">
+            <rect x="60"  y="51" width="190" height="48"/><text x="155" y="80" text-anchor="middle">Enquiry</text>
+            <rect x="365" y="51" width="190" height="48"/><text x="460" y="80" text-anchor="middle">Runs by itself</text>
+            <rect x="670" y="51" width="190" height="48"/><text x="755" y="80" text-anchor="middle">Right person told</text>
+          </g>
+        </svg>
+      </figure>
+
+    </div>
+
+    <div class="ba__counts">
+      <div class="ba__count"><b class="num" id="baSteps">11</b><span>steps in the job</span></div>
+      <div class="ba__count"><b class="num" id="baHours">23</b><span>hours a week across the team</span></div>
+      <div class="ba__count"><b class="num" id="baHands">6</b><span>hand-offs between people</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     8 · RISK REVERSAL — the first build
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="jade risk no-bleed-top" id="risk" data-rail="The first build">
+  <div class="mat-breeze" aria-hidden="true"></div>
+  <div class="mat-louvre" aria-hidden="true"></div>
+  <div class="wrap">
+
+    <span class="label reveal">The first build</span>
+    <h2 class="reveal">If the first build does not work, you walk away.</h2>
+    <div class="risk__grid">
+      <div class="risk__item reveal">
+        <h3>The price does not move</h3>
+        <p>You get it in writing first. It stays that price.</p>
+      </div>
+      <div class="risk__item reveal">
+        <h3>The plan is written down</h3>
+        <p>One job, step by step. What is in, and what is not.</p>
+      </div>
+      <div class="risk__item reveal">
+        <h3>You can walk away</h3>
+        <p>You keep everything. Nothing stops working when we go.</p>
+      </div>
+    </div>
+
+
+    <div class="risk__foot reveal">
+      <p>We price each job on its own. You see the price before we build.</p>
+      <a class="btn btn--primary" href="#enquiries">Speak to us</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     9 · DATA HANDLING
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="data" data-rail="Your data">
+  <div class="wrap">
+    <div class="grid grid--2">
+      <div class="reveal">
+        <span class="label">Your data</span>
+        <p class="data__claim">
+          It all runs inside your own accounts. Your data stays in your
+          systems. None of it is used to train AI.
+        </p>
+      </div>
+      <div class="reveal">
+        <ul class="data__list">
+          <li>Your logins stay yours. We keep no copies.</li>
+          <li>We only get access to the job you agreed to. Nothing more.</li>
+          <li>You can see a log of every run, any time.</li>
+          <li>Who else touches it, and how long we keep it, is on the next page.</li>
+        </ul>
+        <p style="margin-top:1.6em">
+          <a class="lnk" href="/data-and-security">Read more about your data</a>
+        </p>
+        <p class="mono" style="color:var(--ink-soft);margin-top:1.4em">Last reviewed 12 August 2026</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     10 · WHO WE ARE — the founders
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="jade" id="about" data-rail="Who we are">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="label">Who we are</span>
+      <h2>A small team that builds it, then keeps it running.</h2>
+    </div>
+
+    <!-- ┌──────────────────────────────────────────────────────────────┐
+         │ FOUNDERS — names, photographs and career history supplied by │
+         │ the client and used as given. Nothing here is inferred; the  │
+         │ only edits are expanding CMO to Chief Marketing Officer and  │
+         │ ordering each list most-recent-first.                        │
+         │                                                              │
+         │ Portraits: 352px WebP data URIs (33 KB for all three) so     │
+         │ index.html stays one self-contained file. 240px and 480px    │
+         │ files sit in /img if you would rather serve them separately  │
+         │ — swap the data URI for src and add loading="lazy".          │
+         │ alt="" is correct: the name is in the adjacent heading.      │
+         │                                                              │
+         │ GEOGRAPHY: shown at the client's explicit instruction, over  │
+         │ the no-country rule in §0. The employer names and the two    │
+         │ city-bearing institutions (IIM Calcutta, IIIT Bangalore) both│
+         │ point at a specific market. Delete any .fdr__edu line to     │
+         │ remove the city names without touching anything else.        │
+         └──────────────────────────────────────────────────────────────┘ -->
+    <span class="label reveal" style="margin-top:clamp(38px,4.4vw,64px)">The founders</span>
+    <ul class="team reveal">
+      <li class="fdr">
+        <span class="fdr__shot">
+          <img src="data:image/webp;base64,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"
+               alt="" width="352" height="352" decoding="async">
+        </span>
+        <div class="fdr__body">
+          <h3 class="fdr__n">Saurabh Kandpal</h3>
+          <ul class="fdr__roles">
+            <li>
+              <b>Head of Customer Marketing</b>
+              <span class="fdr__at"><span class="fdr__co">CommerceIQ</span><span class="fdr__yr">2022–2026</span></span>
+            </li>
+            <li>
+              <b>Head of Ecommerce for Business</b>
+              <span class="fdr__at"><span class="fdr__co">Samsung</span></span>
+            </li>
+            <li>
+              <b>Director, Digital Transformation</b>
+              <span class="fdr__at"><span class="fdr__co">L&amp;T</span><span class="fdr__yr">2017–2018</span></span>
+            </li>
+            <li>
+              <b>Director, Sales and Client Relations</b>
+              <span class="fdr__at"><span class="fdr__yr">2015–2017</span></span>
+            </li>
+          </ul>
+          <p class="fdr__edu"><b>Studied</b>IIM Calcutta · IIIT Bangalore</p>
+        </div>
+      </li>
+      <li class="fdr">
+        <span class="fdr__shot">
+          <img src="data:image/webp;base64,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"
+               alt="" width="352" height="352" decoding="async">
+        </span>
+        <div class="fdr__body">
+          <h3 class="fdr__n">Kamlesh Pant</h3>
+          <ul class="fdr__roles">
+            <li>
+              <b>Head of Gen AI</b>
+              <span class="fdr__at"><span class="fdr__co">Exponentia AI</span><span class="fdr__yr">2024–2025</span></span>
+            </li>
+            <li>
+              <b>Director of Marketing</b>
+              <span class="fdr__at"><span class="fdr__co">CommerceIQ</span><span class="fdr__yr">2023–2024</span></span>
+            </li>
+            <li>
+              <b>Chief Marketing Officer</b>
+              <span class="fdr__at"><span class="fdr__co">MIT World University</span><span class="fdr__yr">2022–2023</span></span>
+            </li>
+            <li>
+              <b>National Head, Marketing</b>
+              <span class="fdr__at"><span class="fdr__co">Bajaj Finserv</span><span class="fdr__yr">2016–2019</span></span>
+            </li>
+            <li>
+              <b>Head of Communications and Content</b>
+              <span class="fdr__at"><span class="fdr__co">Flipkart</span><span class="fdr__yr">2014–2016</span></span>
+            </li>
+          </ul>
+          <p class="fdr__edu"><b>Studied</b>ISB · 2009  ·  IET · 1999</p>
+        </div>
+      </li>
+      <li class="fdr">
+        <span class="fdr__shot">
+          <img src="data:image/webp;base64,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"
+               alt="" width="352" height="352" decoding="async">
+        </span>
+        <div class="fdr__body">
+          <h3 class="fdr__n">Ajay Joshi</h3>
+          <ul class="fdr__roles">
+            <li>
+              <b>Chief Business Officer</b>
+              <span class="fdr__at"><span class="fdr__co">Gravity Classes</span><span class="fdr__yr">2024–2026</span></span>
+            </li>
+            <li>
+              <b>Chief Business Officer</b>
+              <span class="fdr__at"><span class="fdr__co">Biddin</span><span class="fdr__yr">2023–2026</span></span>
+            </li>
+            <li>
+              <b>Business Unit Head</b>
+              <span class="fdr__at"><span class="fdr__co">BYJU’S</span><span class="fdr__yr">2022–2023</span></span>
+            </li>
+          </ul>
+          <p class="fdr__edu"><b>Studied</b>United College of Engineering and Research · 2012–2016</p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="btn-row reveal">
+      <a class="lnk" href="/about">How we work, in more detail</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     11 · ENQUIRIES
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="enquiries" data-rail="Enquiries">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="label">Enquiries</span>
+      <h2>Tell us what repeats every week.</h2>
+      <p>One line is enough for us to tell you if we can help.</p>
+    </div>
+
+    <div class="enq">
+      <div class="reveal">
+        <!-- PLACEHOLDER: replace 00000000000 with the studio WhatsApp number in
+             full international format, digits only. The number is never rendered
+             on the page — it lives in the href alone. -->
+        <a class="enq__wa" href="https://wa.me/00000000000?text=Hello%20Rewire%2C%20I%20have%20a%20process%20that%20repeats%20every%20week."
+           rel="noopener">
+          <span class="label">Best way</span>
+          <h3>Message us on WhatsApp</h3>
+          <p>Send one line about the job. We reply in the same chat.</p>
+        </a>
+
+        <p class="enq__meta">
+          <b>We reply within one working day.</b><br>
+          If it is urgent, say so in the first message.
+        </p>
+        <p class="enq__meta mono" id="tzNote" style="margin-top:1.2em"></p>
+      </div>
+
+      <div class="reveal">
+        <!-- PLACEHOLDER: point action at the live enquiry endpoint before launch. -->
+        <form class="form" id="enqForm" action="/api/enquiries" method="post" novalidate>
+          <div class="field">
+            <label for="fName">Name</label>
+            <input type="text" id="fName" name="name" autocomplete="name" required>
+            <span class="err" id="errName" hidden>Please add your name.</span>
+          </div>
+          <div class="field">
+            <label for="fOrg">Company</label>
+            <input type="text" id="fOrg" name="organisation" autocomplete="organization">
+          </div>
+          <div class="field">
+            <label for="fEmail">Email</label>
+            <input type="email" id="fEmail" name="email" autocomplete="email" required>
+            <span class="err" id="errEmail" hidden>Please add an email we can reply to.</span>
+          </div>
+          <div class="field">
+            <label for="fWhat">What repeats every week?</label>
+            <textarea id="fWhat" name="process" rows="3" required></textarea>
+            <span class="err" id="errWhat" hidden>Please tell us in one line.</span>
+          </div>
+          <div class="btn-row" style="margin-top:.4em">
+            <button class="btn btn--primary" type="submit">Send enquiry</button>
+          </div>
+          <p class="form__status" id="formStatus" role="status"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="ftr">
+  <div class="wrap">
+    <div class="ftr__grid">
+      <div>
+        <a class="brand" href="/" style="color:var(--on-jade)">
+          <span class="brand__mark" aria-hidden="true"></span>
+          Rewire <small style="color:var(--on-jade-soft)">Automation studio</small>
+        </a>
+        <p style="color:var(--on-jade-soft);margin-top:1.4em;max-width:34ch">
+          We build it inside the tools you already use.
+        </p>
+      </div>
+      <div>
+        <h4>Pages</h4>
+        <ul>
+          <li><a href="/what-we-build">What we build</a></li>
+          <li><a href="/work">Work</a></li>
+          <li><a href="/how-we-work">How we work</a></li>
+          <li><a href="/data-and-security">Your data</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Enquiries</h4>
+        <ul>
+          <li><a href="#enquiries">Send an enquiry</a></li>
+          <!-- PLACEHOLDER: WhatsApp number, digits only, never displayed. -->
+          <li><a href="https://wa.me/00000000000" rel="noopener">WhatsApp</a></li>
+          <!-- PLACEHOLDER: replace with the live mailbox. -->
+          <li><a href="mailto:hello@rewire.com">hello@rewire.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ftr__base">
+      <span>&copy; 2026 Rewire</span>
+      <span>Response within one working day</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   REWIRE — motion and interaction
+   Rules this file obeys:
+     · transform and opacity only
+     · one shared rAF loop for all ambient motion
+     · ambient motion stops when the tab is hidden
+     · prefers-reduced-motion disables everything; nothing stays hidden
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+  "use strict";
+
+  var doc = document;
+  var root = doc.documentElement;
+  var mqReduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var mqFine   = window.matchMedia("(hover: hover) and (pointer: fine)");
+  var REDUCED  = mqReduce.matches;
+
+  var $  = function (s, c) { return (c || doc).querySelector(s); };
+  var $$ = function (s, c) { return Array.prototype.slice.call((c || doc).querySelectorAll(s)); };
+  var clamp = function (v, a, b) { return v < a ? a : v > b ? b : v; };
+  var nf = new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 });
+
+  /* If IntersectionObserver is missing, drop the js flag so nothing is left
+     hidden waiting for a trigger that will never fire. */
+  if (!("IntersectionObserver" in window)) { root.className = root.className.replace(/\bjs\b/, ""); }
+  var HAS_IO = "IntersectionObserver" in window;
+
+  /* ─── 1 · REVEALS ────────────────────────────────────────────────── */
+  (function reveals() {
+    var els = $$(".reveal");
+    if (!HAS_IO || REDUCED) { els.forEach(function (el) { el.classList.add("is-in"); }); return; }
+
+    var seen = new Map();
+    els.forEach(function (el) {
+      var p = el.parentElement;
+      var i = seen.get(p) || 0;
+      seen.set(p, i + 1);
+      el.style.setProperty("--d", Math.min(i, 6) * 60 + "ms");
+    });
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        /* Not intersecting, but already above the fold: the visitor has
+           scrolled past it, so show it rather than leave it hidden. */
+        if (!e.isIntersecting && e.boundingClientRect.top > 0) return;
+        var el = e.target;
+        el.style.willChange = "opacity, transform";
+        el.classList.add("is-in");
+        el.addEventListener("transitionend", function once() {
+          el.style.willChange = "auto";
+          el.removeEventListener("transitionend", once);
+        });
+        io.unobserve(el);
+      });
+    }, { rootMargin: "0px 0px -12% 0px", threshold: 0.01 });
+
+    els.forEach(function (el) { io.observe(el); });
+  })();
+
+  /* ─── 2 · COUNT-UPS ──────────────────────────────────────────────── */
+  (function counters() {
+    var els = $$("[data-count]");
+    if (!HAS_IO || REDUCED || !els.length) return;
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var el = e.target, to = parseFloat(el.getAttribute("data-count")) || 0, t0 = 0;
+        io.unobserve(el);
+        el.textContent = "0";
+        var step = function (t) {
+          if (!t0) t0 = t;
+          var p = clamp((t - t0) / 900, 0, 1);
+          var eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = nf.format(Math.round(to * eased));
+          if (p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
+    }, { threshold: 0.4 });
+
+    els.forEach(function (el) { io.observe(el); });
+  })();
+
+  /* ─── 3 · HEADER, RAIL, SECTION TONE ─────────────────────────────── */
+  var hdr = $("#hdr"), railFill = $("#railFill"), railNow = $("#railNow");
+  var sections = $$("section[data-rail]");
+  var tone = "cream", railLabel = "";
+
+  function onScroll() {
+    var y = window.pageYOffset;
+
+    if (hdr) hdr.classList.toggle("is-condensed", y > 80);
+
+    var docH = doc.body.scrollHeight - window.innerHeight;
+    if (railFill) railFill.style.transform = "scaleY(" + (docH > 0 ? clamp(y / docH, 0, 1) : 0) + ")";
+
+    var probe = 88, nextTone = "cream", nextLabel = railLabel;
+    for (var i = 0; i < sections.length; i++) {
+      var r = sections[i].getBoundingClientRect();
+      if (r.top <= probe && r.bottom > probe) {
+        nextTone = sections[i].classList.contains("jade") ? "jade" : "cream";
+        nextLabel = sections[i].getAttribute("data-rail");
+        break;
+      }
+    }
+    if (nextTone !== tone) { tone = nextTone; doc.body.setAttribute("data-tone", tone); }
+    if (railNow && nextLabel && nextLabel !== railLabel) { railLabel = nextLabel; railNow.textContent = nextLabel; }
+  }
+
+  var scrollQueued = false;
+  window.addEventListener("scroll", function () {
+    if (scrollQueued) return;
+    scrollQueued = true;
+    requestAnimationFrame(function () { scrollQueued = false; onScroll(); });
+  }, { passive: true });
+
+  /* ─── 4 · MOBILE MENU ────────────────────────────────────────────── */
+  (function menu() {
+    var btn = $("#menuBtn"), nav = $("#nav");
+    if (!btn || !nav) return;
+    btn.addEventListener("click", function () {
+      var open = nav.classList.toggle("is-open");
+      btn.setAttribute("aria-expanded", String(open));
+      btn.textContent = open ? "Close" : "Menu";
+    });
+    $$("#navList a").forEach(function (a) {
+      a.addEventListener("click", function () {
+        nav.classList.remove("is-open");
+        btn.setAttribute("aria-expanded", "false");
+        btn.textContent = "Menu";
+      });
+    });
+  })();
+
+  /* ─── 5 · AMBIENT LOOP (breeze drift, packets, parallax, glow) ───── */
+
+  var ambient = [], rafId = null, running = false, lastT = 0;
+
+  function loop(t) {
+    if (!running) return;
+    var dt = lastT ? Math.min(t - lastT, 64) : 16;
+    lastT = t;
+    for (var i = 0; i < ambient.length; i++) ambient[i](t, dt);
+    rafId = requestAnimationFrame(loop);
+  }
+  function startAmbient() {
+    if (running || REDUCED || !ambient.length) return;
+    running = true; lastT = 0; rafId = requestAnimationFrame(loop);
+  }
+  function stopAmbient() {
+    running = false; lastT = 0;
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  }
+  doc.addEventListener("visibilitychange", function () {
+    if (doc.hidden) stopAmbient(); else startAmbient();
+  });
+
+  /* Pointer position, shared by the parallax and the glow. */
+  var pointer = { x: 0, y: 0, has: false };
+  if (mqFine.matches) {
+    window.addEventListener("pointermove", function (e) {
+      pointer.x = e.clientX; pointer.y = e.clientY; pointer.has = true;
+    }, { passive: true });
+  }
+
+  /* ─── 5a · BREEZE BLOCK SCREEN ───────────────────────────────────── */
+  (function breeze() {
+    var host = $("#heroScreen");
+    if (!host || REDUCED) return;
+
+    var SVGNS = "http://www.w3.org/2000/svg";
+    var GROUPS = 6, STEP = 44, groups = [], built = false;
+
+    function build() {
+      var w = host.clientWidth, h = host.clientHeight;
+      if (!w || !h) return;
+      host.textContent = "";
+      groups = [];
+
+      var svg = doc.createElementNS(SVGNS, "svg");
+      svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+      svg.setAttribute("width", w); svg.setAttribute("height", h);
+      svg.setAttribute("aria-hidden", "true");
+
+      var gs = [];
+      for (var g = 0; g < GROUPS; g++) {
+        var el = doc.createElementNS(SVGNS, "g");
+        gs.push(el); svg.appendChild(el);
+        groups.push({ el: el, phase: (g / GROUPS) * Math.PI * 2 });
+      }
+
+      var cols = Math.ceil(w / STEP), rows = Math.ceil(h / STEP), c, r, ci;
+      /* Perforations: r13 at each cell centre, r6.5 at each grid intersection. */
+      for (r = 0; r <= rows; r++) {
+        for (c = 0; c <= cols; c++) {
+          if (c < cols && r < rows) {
+            ci = doc.createElementNS(SVGNS, "circle");
+            ci.setAttribute("cx", c * STEP + 22); ci.setAttribute("cy", r * STEP + 22);
+            ci.setAttribute("r", 13);
+            gs[(r + c * 3) % GROUPS].appendChild(ci);
+          }
+          ci = doc.createElementNS(SVGNS, "circle");
+          ci.setAttribute("cx", c * STEP); ci.setAttribute("cy", r * STEP);
+          ci.setAttribute("r", 6.5);
+          gs[(r * 2 + c) % GROUPS].appendChild(ci);
+        }
+      }
+      host.appendChild(svg);
+      host.classList.add("is-live");
+      built = true;
+    }
+
+    build();
+    if (!built) return;
+
+    var px = 0, py = 0;
+    ambient.push(function (t) {
+      /* Slow sine drift, 26s cycle, well under the 6px ceiling. */
+      for (var i = 0; i < groups.length; i++) {
+        var g = groups[i];
+        var dx = Math.cos(t / 26000 * Math.PI * 2 + g.phase) * 2.4;
+        var dy = Math.sin(t / 26000 * Math.PI * 2 + g.phase) * 3.0;
+        g.el.setAttribute("transform", "translate(" + dx.toFixed(2) + "," + dy.toFixed(2) + ")");
+      }
+      /* Cursor parallax, heavily eased, capped at 12px. Pointer devices only. */
+      if (pointer.has) {
+        var box = host.getBoundingClientRect();
+        var tx = clamp(((pointer.x - (box.left + box.width / 2)) / box.width) * 24, -12, 12);
+        var ty = clamp(((pointer.y - (box.top + box.height / 2)) / box.height) * 24, -12, 12);
+        px += (tx - px) * 0.06; py += (ty - py) * 0.06;
+        host.style.transform = "translate3d(" + px.toFixed(2) + "px," + py.toFixed(2) + "px,0)";
+      }
+    });
+
+    var rt;
+    window.addEventListener("resize", function () {
+      clearTimeout(rt);
+      rt = setTimeout(function () { host.style.transform = ""; build(); }, 220);
+    }, { passive: true });
+  })();
+
+  /* ─── 5b · CURSOR GLOW ON JADE ───────────────────────────────────── */
+  (function glow() {
+    var el = $(".cursor-glow");
+    if (!el || REDUCED || !mqFine.matches) return;
+    var gx = 0, gy = 0, on = false;
+    ambient.push(function () {
+      if (!pointer.has) return;
+      if (!on) { on = true; el.classList.add("is-on"); }
+      gx += (pointer.x - gx) * 0.08;
+      gy += (pointer.y - gy) * 0.08;
+      el.style.transform = "translate3d(" + gx.toFixed(1) + "px," + gy.toFixed(1) + "px,0)";
+    });
+  })();
+
+  /* ─── 6 · SHOWPIECE 1 — LIVE AUTOMATION PIPELINE ─────────────────── */
+  (function pipeline() {
+    var svg = $("#pipeSvg");
+    if (!svg) return;
+
+    var nodes = $$(".pipe-node", svg);
+    var edges = $$(".pipe-edge", svg);
+    var packetLayer = $("#pipePackets");
+    var capLabel = $("#pipeCaptionLabel");
+    var capText  = $("#pipeCaptionText");
+    var list     = $("#pipeList");
+
+    /* Captions are authored once, in the markup, and read from there — so the
+       no-JavaScript list and the interactive caption can never disagree. */
+    var captions = $$("#pipeList dt").map(function (dt, i) {
+      return { title: dt.textContent.trim(), body: $$("#pipeList dd")[i].textContent.trim() };
+    });
+
+    function setActive(i) {
+      nodes.forEach(function (n, k) { n.classList.toggle("is-active", k === i); });
+      edges.forEach(function (e, k) { e.classList.toggle("is-lit", k === i - 1 || k === i); });
+      if (captions[i] && capLabel && capText) {
+        capLabel.textContent = captions[i].title;
+        capText.textContent  = captions[i].body;
+      }
+    }
+
+    nodes.forEach(function (n, i) {
+      n.addEventListener("mouseenter", function () { setActive(i); });
+      n.addEventListener("focus", function () { setActive(i); });
+      n.addEventListener("click", function () { setActive(i); });
+      n.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setActive(i); }
+        if (e.key === "ArrowRight" && nodes[i + 1]) { e.preventDefault(); nodes[i + 1].focus(); }
+        if (e.key === "ArrowLeft"  && nodes[i - 1]) { e.preventDefault(); nodes[i - 1].focus(); }
+      });
+    });
+    svg.addEventListener("mouseleave", function () { setActive(0); });
+    setActive(0);
+
+    /* Nodes settle into place once, in flow order, on first view. */
+    if (HAS_IO && !REDUCED) {
+      var placed = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          placed.disconnect();
+          nodes.forEach(function (n, i) {
+            setTimeout(function () { n.classList.add("is-placed"); }, i * 110);
+          });
+        });
+      }, { threshold: 0.2 });
+      placed.observe(svg);
+    } else {
+      nodes.forEach(function (n) { n.classList.add("is-placed"); });
+    }
+
+    if (list) list.setAttribute("aria-hidden", "true");
+
+    /* Data packets travelling the chain. Hidden entirely under reduced motion. */
+    if (REDUCED || !packetLayer || !edges.length || !edges[0].getPointAtLength) return;
+
+    var lengths = edges.map(function (e) { return e.getTotalLength(); });
+    var SVGNS = "http://www.w3.org/2000/svg";
+    var PACKETS = 3, EDGE_MS = 900, TOTAL = edges.length;
+    var packets = [];
+
+    for (var p = 0; p < PACKETS; p++) {
+      var c = doc.createElementNS(SVGNS, "circle");
+      c.setAttribute("r", 5);
+      c.setAttribute("class", "pipe-packet");
+      packetLayer.appendChild(c);
+      packets.push({ el: c, pos: (TOTAL / PACKETS) * p });
+    }
+
+    var visible = true;
+    if (HAS_IO) {
+      new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }, { threshold: 0 }).observe(svg);
+    }
+
+    ambient.push(function (t, dt) {
+      if (!visible) return;
+      for (var i = 0; i < packets.length; i++) {
+        var k = packets[i];
+        k.pos += dt / EDGE_MS;
+        if (k.pos >= TOTAL) k.pos -= TOTAL;
+        var idx = Math.floor(k.pos);
+        var pt = edges[idx].getPointAtLength((k.pos - idx) * lengths[idx]);
+        k.el.setAttribute("cx", pt.x.toFixed(1));
+        k.el.setAttribute("cy", pt.y.toFixed(1));
+      }
+    });
+  })();
+
+  /* ─── 7 · PROOF — horizontal strip driven by vertical scroll ─────── */
+  (function proof() {
+    var wrap = $("#proofWrap"), pin = $("#proofPin");
+    var vp = $("#proofViewport"), track = $("#proofTrack"), bar = $("#proofBar");
+    if (!wrap || !pin || !vp || !track || !bar) return;
+
+    var pinned = false, overflow = 0, travel = 0;
+
+    function ratio() {
+      var sw = track.scrollWidth || 1;
+      return clamp(vp.clientWidth / sw, 0.08, 1);
+    }
+    function paintBar(progress) {
+      var r = ratio();
+      bar.style.transform = "translateX(" + (progress * (1 - r) * 100).toFixed(2) + "%) scaleX(" + r.toFixed(4) + ")";
+    }
+
+    function measure() {
+      var canPin = window.innerWidth >= 1024 && !REDUCED;
+      if (!canPin) {
+        pinned = false;
+        wrap.classList.remove("is-pinned");
+        wrap.style.height = "";
+        track.style.transform = "";
+        track.style.willChange = "auto";
+        paintBar(vp.scrollWidth > vp.clientWidth ? vp.scrollLeft / (vp.scrollWidth - vp.clientWidth) : 0);
+        return;
+      }
+      wrap.classList.add("is-pinned");
+      pinned = true;
+      overflow = Math.max(0, track.scrollWidth - vp.clientWidth);
+      travel = overflow;
+      wrap.style.height = (pin.offsetHeight + travel) + "px";
+      track.style.willChange = travel > 0 ? "transform" : "auto";
+      update();
+    }
+
+    function update() {
+      if (!pinned) return;
+      var top = wrap.getBoundingClientRect().top;
+      var offset = parseFloat(getComputedStyle(pin).top) || 0;
+      var progress = travel > 0 ? clamp((offset - top) / travel, 0, 1) : 0;
+      track.style.transform = "translate3d(" + (-progress * overflow).toFixed(1) + "px,0,0)";
+      paintBar(progress);
+    }
+
+    vp.addEventListener("scroll", function () {
+      if (pinned) return;
+      var max = vp.scrollWidth - vp.clientWidth;
+      paintBar(max > 0 ? vp.scrollLeft / max : 0);
+    }, { passive: true });
+
+    var q = false;
+    window.addEventListener("scroll", function () {
+      if (!pinned || q) return;
+      q = true;
+      requestAnimationFrame(function () { q = false; update(); });
+    }, { passive: true });
+
+    var rt;
+    window.addEventListener("resize", function () {
+      clearTimeout(rt); rt = setTimeout(measure, 200);
+    }, { passive: true });
+
+    measure();
+    window.addEventListener("load", measure);
+  })();
+
+  /* ─── 8 · SHOWPIECE 2 — HOURS RECLAIMED CALCULATOR ───────────────── */
+  (function calculator() {
+    var team = $("#calcTeam"), hours = $("#calcHours"), cost = $("#calcCost");
+    if (!team || !hours || !cost) return;
+
+    var teamOut = $("#calcTeamOut"), hoursOut = $("#calcHoursOut"), costOut = $("#calcCostOut");
+    var monthly = $("#calcMonthly"), annual = $("#calcAnnual");
+
+    /* Share of repetitive time a live build typically removes. */
+    var RECOVERY = 0.65;
+    var shown = { m: 0, a: 0 }, target = { m: 0, a: 0 }, animating = false;
+
+    function compute() {
+      var t = parseFloat(team.value), h = parseFloat(hours.value), c = parseFloat(cost.value);
+      target.m = t * h * RECOVERY * (52 / 12);
+      target.a = t * h * RECOVERY * 52 * c;
+      teamOut.textContent  = nf.format(t);
+      hoursOut.textContent = h % 1 ? h.toFixed(1) : nf.format(h);
+      costOut.textContent  = "$" + nf.format(c);
+      if (REDUCED) { shown.m = target.m; shown.a = target.a; paint(); return; }
+      if (!animating) { animating = true; requestAnimationFrame(roll); }
+    }
+
+    function paint() {
+      monthly.textContent = nf.format(Math.round(shown.m));
+      annual.textContent  = "$" + nf.format(Math.round(shown.a));
+    }
+
+    function roll() {
+      shown.m += (target.m - shown.m) * 0.18;
+      shown.a += (target.a - shown.a) * 0.18;
+      paint();
+      if (Math.abs(target.m - shown.m) > 0.5 || Math.abs(target.a - shown.a) > 5) {
+        requestAnimationFrame(roll);
+      } else {
+        shown.m = target.m; shown.a = target.a; paint(); animating = false;
+      }
+    }
+
+    [team, hours, cost].forEach(function (el) { el.addEventListener("input", compute); });
+
+    /* Seed from the defaults already rendered in the markup. */
+    var t0 = parseFloat(team.value), h0 = parseFloat(hours.value), c0 = parseFloat(cost.value);
+    shown.m = t0 * h0 * RECOVERY * (52 / 12);
+    shown.a = t0 * h0 * RECOVERY * 52 * c0;
+    compute();
+  })();
+
+  /* ─── 9 · STICKY PROCESS ─────────────────────────────────────────── */
+  (function process() {
+    var steps = $$(".proc__step"), cue = $("#procCue"), cueLabel = $("#procCueLabel");
+    var dots = $$("#procDots li");
+    if (!steps.length || !cue || !HAS_IO) return;
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var i = parseInt(e.target.getAttribute("data-step"), 10);
+        cue.textContent = ("0" + (i + 1)).slice(-2);
+        cueLabel.textContent = e.target.getAttribute("data-title");
+        dots.forEach(function (d, k) { d.classList.toggle("is-on", k === i); });
+      });
+    }, { rootMargin: "-42% 0px -50% 0px", threshold: 0 });
+
+    steps.forEach(function (s) { io.observe(s); });
+  })();
+
+  /* ─── 10 · SHOWPIECE 3 — BEFORE AND AFTER ────────────────────────── */
+  (function beforeAfter() {
+    var sw = $("#baSwitch"), before = $("#baBefore"), after = $("#baAfter");
+    if (!sw || !before || !after) return;
+
+    var figs = { steps: $("#baSteps"), hours: $("#baHours"), hands: $("#baHands") };
+    var VALUES = { manual: { steps: 11, hours: 23, hands: 6 }, auto: { steps: 3, hours: 2, hands: 1 } };
+    var current = { steps: 11, hours: 23, hands: 6 };
+    var rolling = false;
+
+    function show(automated) {
+      sw.setAttribute("aria-checked", String(automated));
+      if (automated) { before.setAttribute("data-off", ""); after.removeAttribute("data-off"); }
+      else { after.setAttribute("data-off", ""); before.removeAttribute("data-off"); }
+      rollTo(automated ? VALUES.auto : VALUES.manual);
+    }
+
+    function rollTo(to) {
+      if (REDUCED) {
+        Object.keys(to).forEach(function (k) { current[k] = to[k]; figs[k].textContent = to[k]; });
+        return;
+      }
+      var t0 = 0;
+      var from = { steps: current.steps, hours: current.hours, hands: current.hands };
+      if (rolling) return;
+      rolling = true;
+      var step = function (t) {
+        if (!t0) t0 = t;
+        var p = clamp((t - t0) / 600, 0, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        Object.keys(to).forEach(function (k) {
+          current[k] = from[k] + (to[k] - from[k]) * eased;
+          figs[k].textContent = Math.round(current[k]);
+        });
+        if (p < 1) requestAnimationFrame(step); else rolling = false;
+      };
+      requestAnimationFrame(step);
+    }
+
+    /* Both readings are stacked and legible until JavaScript hides one. */
+    after.setAttribute("data-off", "");
+    sw.addEventListener("click", function () {
+      show(sw.getAttribute("aria-checked") !== "true");
+    });
+  })();
+
+  /* ─── 11 · ENQUIRY FORM ──────────────────────────────────────────── */
+  (function enquiryForm() {
+    var form = $("#enqForm");
+    if (!form) return;
+    var status = $("#formStatus");
+    var checks = [
+      { input: $("#fName"),  err: $("#errName"),  ok: function (v) { return v.trim().length > 1; } },
+      { input: $("#fEmail"), err: $("#errEmail"), ok: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); } },
+      { input: $("#fWhat"),  err: $("#errWhat"),  ok: function (v) { return v.trim().length > 4; } }
+    ];
+
+    checks.forEach(function (c) {
+      c.input.addEventListener("blur", function () {
+        var good = c.ok(c.input.value);
+        c.err.hidden = good;
+        c.input.setAttribute("aria-invalid", String(!good));
+      });
+    });
+
+    form.addEventListener("submit", function (e) {
+      var bad = null;
+      checks.forEach(function (c) {
+        var good = c.ok(c.input.value);
+        c.err.hidden = good;
+        c.input.setAttribute("aria-invalid", String(!good));
+        if (!good && !bad) bad = c.input;
+      });
+      if (bad) { e.preventDefault(); bad.focus(); return; }
+
+      /* Progressive enhancement: without JavaScript this posts normally. */
+      e.preventDefault();
+      status.textContent = "Sending…";
+      fetch(form.action, { method: "POST", body: new FormData(form) })
+        .then(function (r) {
+          if (!r.ok) throw new Error("bad response");
+          form.reset();
+          status.textContent = "Got it. We reply within one working day.";
+        })
+        .catch(function () {
+          status.style.color = "var(--state-warn)";
+          status.textContent = "That did not send. Please message us on WhatsApp instead.";
+        });
+    });
+  })();
+
+  /* ─── 12 · LOCAL TIME (visitor's own zone, 24-hour) ──────────────── */
+  (function localTime() {
+    var el = $("#tzNote");
+    if (!el) return;
+    try {
+      var t = new Intl.DateTimeFormat(undefined, {
+        hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+      }).format(new Date());
+      el.textContent = "Your local time is " + t + ".";
+    } catch (err) { /* leave the line empty rather than guess */ }
+  })();
+
+  /* ─── 13 · BOOT ──────────────────────────────────────────────────── */
+  onScroll();
+  startAmbient();
+
+  /* Honour a mid-session change to the motion preference. */
+  var onPref = function () { if (mqReduce.matches) { stopAmbient(); location.reload(); } };
+  if (mqReduce.addEventListener) mqReduce.addEventListener("change", onPref);
+  else if (mqReduce.addListener) mqReduce.addListener(onPref);
+
+})();
+</script>
+
+</body>
+</html>
