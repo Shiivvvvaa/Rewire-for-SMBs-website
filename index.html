@@ -39,6 +39,7 @@
   /* ── Accent. Terracotta is the only accent hue on this site. ──── */
   --terra:       #C8763C;   /* rules, marks, large type              */
   --terra-deep:  #A65A26;   /* accent TEXT on cream        4.53:1    */
+  --on-terra:    #FFFFFF;   /* on terracotta buttons       4.99:1    */
   --terra-jade:  #E09A5F;   /* accent TEXT on jade         6.15:1    */
 
   /* ── Support ──────────────────────────────────────────────────── */
@@ -441,6 +442,12 @@ body[data-tone="jade"] .nav a.is-current{ color:var(--on-jade); }
 body[data-tone="jade"] .nav a{ color:var(--on-jade-soft); }
 body[data-tone="jade"] .nav a:hover{ color:var(--on-jade); }
 .hdr .btn{ padding:.72em 1.15em; font-size:.6875rem; }
+/* The header CTA is small uppercase mono sitting on terracotta, and the sticky
+   header carries it over both grounds. Pin it to white so it never dims. */
+.hdr .btn--primary,
+.hdr .btn--primary:hover,
+.hdr .btn--primary:focus-visible,
+body[data-tone="jade"] .hdr .btn--primary{ color:var(--on-terra); }
 
 /* Menu button exists only when JavaScript is running. */
 .menu-btn{ display:none; }
@@ -579,7 +586,7 @@ body[data-tone="jade"] .cursor-glow.is-on{ opacity:.5; }
   padding:clamp(14px,1.8vw,24px);
 }
 .pipe__scroll{ overflow-x:auto; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; }
-.pipe__scroll svg{ display:block; width:100%; min-width:760px; height:auto; }
+.pipe__scroll svg{ display:block; width:100%; min-width:1080px; height:auto; }
 
 .pipe-node rect{
   fill:var(--jade);
@@ -612,6 +619,18 @@ body[data-tone="jade"] .cursor-glow.is-on{ opacity:.5; }
   transition:stroke var(--t-mid) var(--ease);
 }
 .pipe-edge.is-lit{ stroke:var(--terra); }
+/* Steps where a run stops. Dashed, so an ending reads as an ending. */
+.pipe-node--end rect{ stroke-dasharray:5 5; }
+/* What kind of step it is, the way a workflow tool labels its nodes. */
+.pipe-node text.pipe-kind{
+  font-family:var(--f-mono); font-size:11px; font-weight:600;
+  letter-spacing:.16em; fill:var(--terra-jade);
+}
+/* Which way each branch out of a decision goes. */
+.pipe-branch-label{
+  font-family:var(--f-mono); font-size:11px; font-weight:600;
+  letter-spacing:.16em; text-transform:uppercase; fill:var(--terra-jade);
+}
 .pipe-packet{ fill:var(--terra); }
 
 .pipe__caption{ display:none; }
@@ -727,6 +746,11 @@ body[data-tone="jade"] .cursor-glow.is-on{ opacity:.5; }
   position:absolute; inset:0; background:var(--terra);
   transform:scaleX(.34); transform-origin:left center;
 }
+/* Sits directly on the rule that opens the numbers, clear of the
+   scroll bar belonging to the pinned panels above. */
+.proof__outcomes{ margin-top:clamp(40px,4.6vw,62px); margin-bottom:.9em; }
+.proof__outcomes + .proof__stats{ margin-top:0; }
+
 .proof__stats{
   display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
   gap:clamp(16px,2.4vw,34px);
@@ -965,6 +989,13 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
 }
 .fdr:hover .fdr__shot{ border-color:var(--terra); }
 .fdr__shot img{ width:100%; height:100%; object-fit:cover; display:block; }
+/* Stand-in for a person whose portrait has not arrived yet. */
+.fdr__shot--initials{
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--f-mono); font-weight:600; letter-spacing:.12em;
+  font-size:clamp(1.5rem,1.1rem + 1.4vw,2.125rem);
+  color:var(--terra-jade);
+}
 
 .fdr__n{
   font-size:clamp(1.375rem,1.15rem + .85vw,1.875rem);
@@ -1195,7 +1226,7 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
       <ul id="navList">
         <li><a href="#what-we-build">What we build</a></li>
         <li><a href="#proof">Work</a></li>
-        <li><a href="#risk">How we work</a></li>
+        <li><a href="#before-after">How we work</a></li>
         <li><a href="#data">Your data</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#enquiries">Enquiries</a></li>
@@ -1256,54 +1287,177 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
 
     <div class="sec-head reveal">
       <span class="label">One job, start to end</span>
-      <h2>This is what a simple automation looks like.</h2>
+      <h2>This is one real build, running end to end.</h2>
     </div>
 
     <div class="pipe__stage reveal">
-      <div class="pipe__scroll" tabindex="0" role="group" aria-label="Diagram of the six steps, scrolls sideways">
-        <svg viewBox="0 0 1490 300" role="img" aria-labelledby="pipeTitle pipeDesc" id="pipeSvg">
-          <title id="pipeTitle">A six-step automation, start to end</title>
-          <desc id="pipeDesc">New enquiry, then check it, then fill it in, then write a reply, then pass it on, then save and report. Each step passes to the next.</desc>
+      <div class="pipe__scroll" tabindex="0" role="group" aria-label="Diagram of the twenty-two steps, scrolls sideways">
+        <svg viewBox="0 0 1540 1140" role="img" aria-labelledby="pipeTitle pipeDesc" id="pipeSvg">
+          <title id="pipeTitle">One build, twenty-two steps, drawn as it is wired</title>
+          <desc id="pipeDesc">A workflow of twenty-two steps. An enquiry arrives and is written out, then a check splits it: junk is logged and dropped, real work goes on. Two lookups run side by side and are merged into a score, which pings the owner and picks who owns the job. A quote is drafted, approved by you (your edits go back to the draft), sent, then left for a day. A voice agent calls; if nobody answers, a text resends the quote and the wait starts again. Once answered, the slot is booked, reminders are set, the invoice is raised, and late payment loops back into a chase until it is paid and everything is filed.</desc>
 
-          <g id="pipeEdges">
-            <path class="pipe-edge" data-edge="0" d="M215 80 C 245 80, 245 200, 275 200"/>
-            <path class="pipe-edge" data-edge="1" d="M465 200 C 495 200, 495 80, 525 80"/>
-            <path class="pipe-edge" data-edge="2" d="M715 80 C 745 80, 745 200, 775 200"/>
-            <path class="pipe-edge" data-edge="3" d="M965 200 C 995 200, 995 80, 1025 80"/>
-            <path class="pipe-edge" data-edge="4" d="M1215 80 C 1245 80, 1245 200, 1275 200"/>
+          <!-- Every edge names the two steps it joins, so hovering a step lights only
+               the edges that touch it. data-trunk is the happy path the packets follow;
+               the branches and the retry loops are drawn but never animated. -->
+          <g id="pipeEdges" data-trunk="0,1,3,6,8,9,10,11,13,14,15,18,20,21,23">
+            <path class="pipe-edge" data-edge="0" data-from="0" data-to="1" d="M215 207 L275 207"/>
+            <path class="pipe-edge" data-edge="1" data-from="1" data-to="2" d="M465 207 L525 207"/>
+            <path class="pipe-edge" data-edge="2" data-from="2" data-to="3" d="M715 207 C 785 207, 705 82, 775 82"/>
+            <path class="pipe-edge" data-edge="3" data-from="2" data-to="4" d="M715 207 L775 207"/>
+            <path class="pipe-edge" data-edge="4" data-from="2" data-to="5" d="M715 207 C 785 207, 705 332, 775 332"/>
+            <path class="pipe-edge" data-edge="5" data-from="3" data-to="6" d="M965 82 C 1035 82, 955 207, 1025 207"/>
+            <path class="pipe-edge" data-edge="6" data-from="4" data-to="6" d="M965 207 L1025 207"/>
+            <path class="pipe-edge" data-edge="7" data-from="6" data-to="7" d="M1215 207 C 1285 207, 1205 82, 1275 82"/>
+            <path class="pipe-edge" data-edge="8" data-from="6" data-to="8" d="M1215 207 L1275 207"/>
+            <path class="pipe-edge" data-edge="9" data-from="8" data-to="9" d="M1465 207 C 1512 207, 1512 277, 1512 360 C 1512 396, 1486 420, 1440 420 L 70 420 C 26 420, 8 472, 8 527 C 8 587, 12 637, 25 637"/>
+            <path class="pipe-edge" data-edge="10" data-from="9" data-to="10" d="M215 637 L275 637"/>
+            <path class="pipe-edge" data-edge="11" data-from="10" data-to="11" d="M465 637 L525 637"/>
+            <path class="pipe-edge" data-edge="12" data-from="10" data-to="9" d="M370 595 C 370 553, 330 547, 290 547 L 200 547 C 160 547, 120 553, 120 595"/>
+            <path class="pipe-edge" data-edge="13" data-from="11" data-to="12" d="M715 637 L775 637"/>
+            <path class="pipe-edge" data-edge="14" data-from="12" data-to="13" d="M965 637 C 1035 637, 955 512, 1025 512"/>
+            <path class="pipe-edge" data-edge="15" data-from="13" data-to="14" d="M1215 512 C 1285 512, 1205 637, 1275 637"/>
+            <path class="pipe-edge" data-edge="16" data-from="14" data-to="15" d="M1370 679 C 1370 731, 1318 762, 1215 762"/>
+            <path class="pipe-edge" data-edge="17" data-from="15" data-to="12" d="M1025 762 C 963 762, 870 735, 870 679"/>
+            <path class="pipe-edge" data-edge="18" data-from="14" data-to="16" d="M1465 637 C 1512 637, 1512 707, 1512 788 C 1512 824, 1486 848, 1440 848 L 70 848 C 26 848, 8 900, 8 952 C 8 1012, 12 1062, 25 1062"/>
+            <path class="pipe-edge" data-edge="19" data-from="16" data-to="17" d="M215 1062 C 285 1062, 205 937, 275 937"/>
+            <path class="pipe-edge" data-edge="20" data-from="16" data-to="18" d="M215 1062 L275 1062"/>
+            <path class="pipe-edge" data-edge="21" data-from="18" data-to="19" d="M465 1062 L525 1062"/>
+            <path class="pipe-edge" data-edge="22" data-from="19" data-to="20" d="M715 1062 C 785 1062, 705 937, 775 937"/>
+            <path class="pipe-edge" data-edge="23" data-from="19" data-to="21" d="M715 1062 L775 1062"/>
+            <path class="pipe-edge" data-edge="24" data-from="20" data-to="19" d="M775 937 C 713 937, 620 974, 620 1020"/>
+          </g>
+
+          <g id="pipeBranchLabels" aria-hidden="true">
+            <text class="pipe-branch-label" x="723" y="191" text-anchor="start">yes</text>
+            <text class="pipe-branch-label" x="723" y="245" text-anchor="start">no</text>
+            <text class="pipe-branch-label" x="245" y="535" text-anchor="middle">edits</text>
+            <text class="pipe-branch-label" x="1386" y="705" text-anchor="start">no answer</text>
+            <text class="pipe-branch-label" x="723" y="1046" text-anchor="start">late</text>
+            <text class="pipe-branch-label" x="723" y="1100" text-anchor="start">paid</text>
           </g>
 
           <g id="pipePackets"></g>
 
           <g class="pipe-node" data-node="0" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 1, New enquiry">
-            <rect x="25" y="38" width="190" height="84"/>
-            <text x="45" y="72"><tspan class="idx">01</tspan></text>
-            <text x="45" y="99">New enquiry</text>
+            <rect x="25" y="165" width="190" height="84"/>
+            <text x="45" y="199"><tspan class="idx">01</tspan></text>
+            <text class="pipe-kind" x="195" y="198" text-anchor="end">TRIGGER</text>
+            <text x="45" y="226">New enquiry</text>
           </g>
-          <g class="pipe-node" data-node="1" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 2, Check it">
-            <rect x="275" y="158" width="190" height="84"/>
-            <text x="295" y="192"><tspan class="idx">02</tspan></text>
-            <text x="295" y="219">Check it</text>
+          <g class="pipe-node" data-node="1" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 2, Transcribe it">
+            <rect x="275" y="165" width="190" height="84"/>
+            <text x="295" y="199"><tspan class="idx">02</tspan></text>
+            <text x="295" y="226">Transcribe it</text>
           </g>
-          <g class="pipe-node" data-node="2" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 3, Fill it in">
-            <rect x="525" y="38" width="190" height="84"/>
-            <text x="545" y="72"><tspan class="idx">03</tspan></text>
-            <text x="545" y="99">Fill it in</text>
+          <g class="pipe-node" data-node="2" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 3, Real enquiry?">
+            <rect x="525" y="165" width="190" height="84"/>
+            <text x="545" y="199"><tspan class="idx">03</tspan></text>
+            <text class="pipe-kind" x="695" y="198" text-anchor="end">IF</text>
+            <text x="545" y="226">Real enquiry?</text>
           </g>
-          <g class="pipe-node" data-node="3" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 4, Write reply">
-            <rect x="775" y="158" width="190" height="84"/>
-            <text x="795" y="192"><tspan class="idx">04</tspan></text>
-            <text x="795" y="219">Write reply</text>
+          <g class="pipe-node" data-node="3" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 4, Look up your CRM">
+            <rect x="775" y="40" width="190" height="84"/>
+            <text x="795" y="74"><tspan class="idx">04</tspan></text>
+            <text x="795" y="101">Look up your CRM</text>
           </g>
-          <g class="pipe-node" data-node="4" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 5, Pass it on">
-            <rect x="1025" y="38" width="190" height="84"/>
-            <text x="1045" y="72"><tspan class="idx">05</tspan></text>
-            <text x="1045" y="99">Pass it on</text>
+          <g class="pipe-node" data-node="4" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 5, Price from stock">
+            <rect x="775" y="165" width="190" height="84"/>
+            <text x="795" y="199"><tspan class="idx">05</tspan></text>
+            <text x="795" y="226">Price from stock</text>
           </g>
-          <g class="pipe-node" data-node="5" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 6, Save and report">
-            <rect x="1275" y="158" width="190" height="84"/>
-            <text x="1295" y="192"><tspan class="idx">06</tspan></text>
-            <text x="1295" y="219">Save and report</text>
+          <g class="pipe-node pipe-node--end" data-node="5" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 6, Bin and log">
+            <rect x="775" y="290" width="190" height="84"/>
+            <text x="795" y="324"><tspan class="idx">06</tspan></text>
+            <text class="pipe-kind" x="945" y="323" text-anchor="end">END</text>
+            <text x="795" y="351">Bin and log</text>
+          </g>
+          <g class="pipe-node" data-node="6" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 7, Merge and score">
+            <rect x="1025" y="165" width="190" height="84"/>
+            <text x="1045" y="199"><tspan class="idx">07</tspan></text>
+            <text class="pipe-kind" x="1195" y="198" text-anchor="end">MERGE</text>
+            <text x="1045" y="226">Merge and score</text>
+          </g>
+          <g class="pipe-node pipe-node--end" data-node="7" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 8, Ping the owner">
+            <rect x="1275" y="40" width="190" height="84"/>
+            <text x="1295" y="74"><tspan class="idx">08</tspan></text>
+            <text class="pipe-kind" x="1445" y="73" text-anchor="end">END</text>
+            <text x="1295" y="101">Ping the owner</text>
+          </g>
+          <g class="pipe-node" data-node="8" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 9, Pick the owner">
+            <rect x="1275" y="165" width="190" height="84"/>
+            <text x="1295" y="199"><tspan class="idx">09</tspan></text>
+            <text x="1295" y="226">Pick the owner</text>
+          </g>
+          <g class="pipe-node" data-node="9" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 10, Draft the quote">
+            <rect x="25" y="595" width="190" height="84"/>
+            <text x="45" y="629"><tspan class="idx">10</tspan></text>
+            <text x="45" y="656">Draft the quote</text>
+          </g>
+          <g class="pipe-node" data-node="10" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 11, You approve it">
+            <rect x="275" y="595" width="190" height="84"/>
+            <text x="295" y="629"><tspan class="idx">11</tspan></text>
+            <text class="pipe-kind" x="445" y="628" text-anchor="end">IF</text>
+            <text x="295" y="656">You approve it</text>
+          </g>
+          <g class="pipe-node" data-node="11" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 12, Send the quote">
+            <rect x="525" y="595" width="190" height="84"/>
+            <text x="545" y="629"><tspan class="idx">12</tspan></text>
+            <text x="545" y="656">Send the quote</text>
+          </g>
+          <g class="pipe-node" data-node="12" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 13, Wait a day">
+            <rect x="775" y="595" width="190" height="84"/>
+            <text x="795" y="629"><tspan class="idx">13</tspan></text>
+            <text class="pipe-kind" x="945" y="628" text-anchor="end">WAIT</text>
+            <text x="795" y="656">Wait a day</text>
+          </g>
+          <g class="pipe-node" data-node="13" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 14, Voice agent calls">
+            <rect x="1025" y="470" width="190" height="84"/>
+            <text x="1045" y="504"><tspan class="idx">14</tspan></text>
+            <text x="1045" y="531">Voice agent calls</text>
+          </g>
+          <g class="pipe-node" data-node="14" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 15, Did they answer?">
+            <rect x="1275" y="595" width="190" height="84"/>
+            <text x="1295" y="629"><tspan class="idx">15</tspan></text>
+            <text class="pipe-kind" x="1445" y="628" text-anchor="end">IF</text>
+            <text x="1295" y="656">Did they answer?</text>
+          </g>
+          <g class="pipe-node" data-node="15" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 16, Text and resend">
+            <rect x="1025" y="720" width="190" height="84"/>
+            <text x="1045" y="754"><tspan class="idx">16</tspan></text>
+            <text x="1045" y="781">Text and resend</text>
+          </g>
+          <g class="pipe-node" data-node="16" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 17, Book the slot">
+            <rect x="25" y="1020" width="190" height="84"/>
+            <text x="45" y="1054"><tspan class="idx">17</tspan></text>
+            <text x="45" y="1081">Book the slot</text>
+          </g>
+          <g class="pipe-node pipe-node--end" data-node="17" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 18, Set reminders">
+            <rect x="275" y="895" width="190" height="84"/>
+            <text x="295" y="929"><tspan class="idx">18</tspan></text>
+            <text class="pipe-kind" x="445" y="928" text-anchor="end">END</text>
+            <text x="295" y="956">Set reminders</text>
+          </g>
+          <g class="pipe-node" data-node="18" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 19, Raise the invoice">
+            <rect x="275" y="1020" width="190" height="84"/>
+            <text x="295" y="1054"><tspan class="idx">19</tspan></text>
+            <text x="295" y="1081">Raise the invoice</text>
+          </g>
+          <g class="pipe-node" data-node="19" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 20, Paid on time?">
+            <rect x="525" y="1020" width="190" height="84"/>
+            <text x="545" y="1054"><tspan class="idx">20</tspan></text>
+            <text class="pipe-kind" x="695" y="1053" text-anchor="end">IF</text>
+            <text x="545" y="1081">Paid on time?</text>
+          </g>
+          <g class="pipe-node" data-node="20" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 21, Chase late payers">
+            <rect x="775" y="895" width="190" height="84"/>
+            <text x="795" y="929"><tspan class="idx">21</tspan></text>
+            <text x="795" y="956">Chase late payers</text>
+          </g>
+          <g class="pipe-node pipe-node--end" data-node="21" tabindex="0" role="button" aria-describedby="pipeCaptionText" aria-label="Step 22, File and report">
+            <rect x="775" y="1020" width="190" height="84"/>
+            <text x="795" y="1054"><tspan class="idx">22</tspan></text>
+            <text class="pipe-kind" x="945" y="1053" text-anchor="end">END</text>
+            <text x="795" y="1081">File and report</text>
           </g>
         </svg>
       </div>
@@ -1311,18 +1465,34 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
       <!-- Shown only when JavaScript is running. -->
       <div class="pipe__caption" aria-live="polite">
         <span class="label" id="pipeCaptionLabel">01 — New enquiry</span>
-        <p id="pipeCaptionText">A form, an email or a chat starts it off.</p>
+        <p id="pipeCaptionText">A WhatsApp voice note, a missed call or a web form. Whichever it is, it starts the same run.</p>
       </div>
 
       <!-- The no-JavaScript reading of the same diagram. Hidden by CSS only
            when the js class is present, so it is always available otherwise. -->
       <dl class="pipe__list" id="pipeList">
-        <div><dt>01 — New enquiry</dt><dd>A form, an email or a chat starts it off.</dd></div>
-        <div><dt>02 — Check it</dt><dd>Your rules decide if it is real, and how fast to act.</dd></div>
-        <div><dt>03 — Fill it in</dt><dd>We add what your own files already know about them.</dd></div>
-        <div><dt>04 — Write reply</dt><dd>A reply is written in your words, with the right files added.</dd></div>
-        <div><dt>05 — Pass it on</dt><dd>It goes to the right person, where they will see it.</dd></div>
-        <div><dt>06 — Save and report</dt><dd>It is saved in your files and added to a weekly report.</dd></div>
+        <div><dt>01 — New enquiry</dt><dd>A WhatsApp voice note, a missed call or a web form. Whichever it is, it starts the same run.</dd></div>
+        <div><dt>02 — Transcribe it</dt><dd>The voice note is written out, and translated if it needs to be, so every enquiry is text from here on.</dd></div>
+        <div><dt>03 — Real enquiry?</dt><dd>Your rules read it. Junk, duplicates and people you have already turned down go one way. Real work goes the other.</dd></div>
+        <div><dt>04 — Look up your CRM</dt><dd>Everything you already hold on them is pulled in: past jobs, notes, what they last paid.</dd></div>
+        <div><dt>05 — Price from stock</dt><dd>At the same time, your live stock and rate card are read for what the job would actually cost today.</dd></div>
+        <div><dt>06 — Bin and log</dt><dd>The run stops here. Nothing reaches your team, but it is written down so you can see what was dropped.</dd></div>
+        <div><dt>07 — Merge and score</dt><dd>The two lookups come back together, and the job is scored on size, urgency and how likely it is to close.</dd></div>
+        <div><dt>08 — Ping the owner</dt><dd>A big one sends a message straight away, before anything else happens.</dd></div>
+        <div><dt>09 — Pick the owner</dt><dd>The job is handed to the right person by your own rules, not by whoever happens to get to it first.</dd></div>
+        <div><dt>10 — Draft the quote</dt><dd>A priced quote is written from your rate card, in your words, with the right files attached.</dd></div>
+        <div><dt>11 — You approve it</dt><dd>It waits for one click. This is the only step that needs you.</dd></div>
+        <div><dt>12 — Send the quote</dt><dd>It goes out as a PDF from your own address, and the clock starts.</dd></div>
+        <div><dt>13 — Wait a day</dt><dd>Nothing happens for a day. If they reply in that time the run stops and the thread lands in your inbox.</dd></div>
+        <div><dt>14 — Voice agent calls</dt><dd>A day later the agent rings, answers the usual questions and holds a slot in your diary.</dd></div>
+        <div><dt>15 — Did they answer?</dt><dd>Answered, and it goes to booking. Not answered, and it goes round once more.</dd></div>
+        <div><dt>16 — Text and resend</dt><dd>A text goes out with the quote again, and the wait starts over.</dd></div>
+        <div><dt>17 — Book the slot</dt><dd>The slot is written into your diary and the customer gets a confirmation.</dd></div>
+        <div><dt>18 — Set reminders</dt><dd>Reminders are scheduled for the day before, so nobody has to remember to send them.</dd></div>
+        <div><dt>19 — Raise the invoice</dt><dd>The deposit link goes out and the invoice is raised against the job.</dd></div>
+        <div><dt>20 — Paid on time?</dt><dd>The payment is watched. Paid, and the run finishes. Late, and it goes round.</dd></div>
+        <div><dt>21 — Chase late payers</dt><dd>A reminder goes out on your terms, then it checks again. Nobody has to ask.</dd></div>
+        <div><dt>22 — File and report</dt><dd>Everything is written back to your systems and lands in Monday morning’s report.</dd></div>
       </dl>
     </div>
 
@@ -1468,6 +1638,7 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
   </div>
 
   <div class="wrap">
+    <span class="label reveal proof__outcomes">Outcomes</span>
     <div class="proof__stats reveal">
       <div class="stat">
         <b class="num" data-count="23">23</b>
@@ -1515,38 +1686,34 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
             <label for="calcHours">Hours each one spends on this a week</label>
             <output class="calc__val num" id="calcHoursOut" for="calcHours">6</output>
           </div>
-          <input type="range" id="calcHours" name="hours" min="1" max="20" step="0.5" value="6"
+          <input type="range" id="calcHours" name="hours" min="1" max="50" step="0.5" value="6"
                  aria-describedby="calcHoursScale">
-          <div class="calc__scale num" id="calcHoursScale"><span>1</span><span>20</span></div>
+          <div class="calc__scale num" id="calcHoursScale"><span>1</span><span>50</span></div>
         </div>
 
         <div class="calc__field">
           <div class="calc__top">
-            <label for="calcCost">What one hour of their time costs</label>
-            <output class="calc__val num" id="calcCostOut" for="calcCost">$38</output>
+            <label for="calcCost">What one month of their time costs</label>
+            <output class="calc__val num" id="calcCostOut" for="calcCost">$6,000</output>
           </div>
-          <input type="range" id="calcCost" name="cost" min="8" max="180" step="1" value="38"
+          <input type="range" id="calcCost" name="cost" min="400" max="12000" step="100" value="6000"
                  aria-describedby="calcCostScale">
-          <div class="calc__scale num" id="calcCostScale"><span>$8</span><span>$180</span></div>
+          <div class="calc__scale num" id="calcCostScale"><span>$400</span><span>$12,000</span></div>
         </div>
       </form>
 
       <div class="calc__out">
         <div class="mat-louvre" aria-hidden="true"></div>
 
-        <span class="label">Hours you get back each month</span>
-        <output class="calc__big num" id="calcMonthly" for="calcTeam calcHours calcCost" aria-live="polite">304</output>
+        <span class="label">Hours your team saves for other important stuff</span>
+        <output class="calc__big num" id="calcMonthly" for="calcTeam calcHours calcCost" aria-live="polite">164</output>
         <span class="calc__unit">hours handed back to your team</span>
 
         <div class="calc__second">
           <span class="label">Money saved each year</span>
-          <output class="calc__mid num" id="calcAnnual" for="calcTeam calcHours calcCost">$138,715</output>
+          <output class="calc__mid num" id="calcAnnual" for="calcTeam calcHours calcCost">$73,710</output>
         </div>
 
-        <p class="calc__note">
-          We take away about 65% of this work. Those hours go back to the
-          people you already have.
-        </p>
       </div>
 
     </div>
@@ -1556,18 +1723,17 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
 <!-- ═══════════════════════════════════════════════════════════════
      6 · SHOWPIECE — BEFORE AND AFTER
      ═══════════════════════════════════════════════════════════════ -->
-<section class="jade no-bleed-bottom" id="before-after" data-rail="Before and after">
+<section class="jade" id="before-after" data-rail="Before and after">
   <div class="mat-breeze" aria-hidden="true"></div>
   <div class="wrap">
 
     <div class="sec-head reveal">
       <h2>Before and after</h2>
-      <p>One enquiry, from the moment it lands to when it is filed.</p>
     </div>
 
     <button class="ba__switch reveal" id="baSwitch" role="switch" aria-checked="false"
-            aria-label="Switch between the job done by hand and the job done for you">
-      <span class="txt">By hand today</span>
+            aria-label="Switch between the current state and the job done for you">
+      <span class="txt">Current State</span>
       <span class="ba__track" aria-hidden="true"><span class="ba__knob"></span></span>
       <span class="txt">Automated</span>
     </button>
@@ -1575,7 +1741,7 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
     <div class="ba__stage" id="baStage">
 
       <figure class="ba__fig ba--before" id="baBefore">
-        <figcaption>By hand today — 11 steps, 6 hand-offs</figcaption>
+        <figcaption>Current State — 11 steps, 6 hand-offs</figcaption>
         <svg viewBox="0 0 920 175" role="img" aria-label="Eleven boxes connected by crossing lines, several of them doubling back.">
           <g class="ba-edge-group">
             <path class="ba-edge" d="M67 37 L147 131"/>
@@ -1609,15 +1775,15 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
 
       <figure class="ba__fig ba--after" id="baAfter">
         <figcaption>Automated — 3 steps, 1 hand-off</figcaption>
-        <svg viewBox="0 0 920 175" role="img" aria-label="Three boxes joined by one straight line: enquiry, runs by itself, right person told.">
+        <svg viewBox="0 0 920 175" role="img" aria-label="Three boxes joined by one straight line: enquiry, runs by itself, handed over to the right person.">
           <g class="ba-edge-group">
             <path class="ba-edge" d="M250 75 L365 75"/>
-            <path class="ba-edge" d="M555 75 L670 75"/>
+            <path class="ba-edge" d="M555 75 L620 75"/>
           </g>
           <g class="ba-node">
             <rect x="60"  y="51" width="190" height="48"/><text x="155" y="80" text-anchor="middle">Enquiry</text>
             <rect x="365" y="51" width="190" height="48"/><text x="460" y="80" text-anchor="middle">Runs by itself</text>
-            <rect x="670" y="51" width="190" height="48"/><text x="755" y="80" text-anchor="middle">Right person told</text>
+            <rect x="620" y="51" width="290" height="48"/><text x="765" y="80" text-anchor="middle">Handed over to the right person</text>
           </g>
         </svg>
       </figure>
@@ -1626,42 +1792,8 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
 
     <div class="ba__counts">
       <div class="ba__count"><b class="num" id="baSteps">11</b><span>steps in the job</span></div>
-      <div class="ba__count"><b class="num" id="baHours">23</b><span>hours a week across the team</span></div>
+      <div class="ba__count"><b class="num" id="baHours">23</b><span id="baHoursLabel">hours a week across the team</span></div>
       <div class="ba__count"><b class="num" id="baHands">6</b><span>hand-offs between people</span></div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════
-     7 · RISK REVERSAL — the first build
-     ═══════════════════════════════════════════════════════════════ -->
-<section class="jade risk no-bleed-top" id="risk" data-rail="The first build">
-  <div class="mat-breeze" aria-hidden="true"></div>
-  <div class="mat-louvre" aria-hidden="true"></div>
-  <div class="wrap">
-
-    <span class="label reveal">The first build</span>
-    <h2 class="reveal">If the first build does not work, you walk away.</h2>
-    <div class="risk__grid">
-      <div class="risk__item reveal">
-        <h3>The price does not move</h3>
-        <p>You get it in writing first. It stays that price.</p>
-      </div>
-      <div class="risk__item reveal">
-        <h3>The plan is written down</h3>
-        <p>One job, step by step. What is in, and what is not.</p>
-      </div>
-      <div class="risk__item reveal">
-        <h3>You can walk away</h3>
-        <p>You keep everything. Nothing stops working when we go.</p>
-      </div>
-    </div>
-
-
-    <div class="risk__foot reveal">
-      <p>We price each job on its own. You see the price before we build.</p>
-      <a class="btn btn--primary" href="#enquiries">Book a free audit</a>
     </div>
 
   </div>
@@ -1676,8 +1808,8 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
       <div class="reveal">
         <span class="label">Your data</span>
         <p class="data__claim">
-          It all runs inside your own accounts. Your data stays in your
-          systems. None of it is used to train AI.
+          It all runs inside your own accounts. Your data completely is in your
+          control. None of it is used to train AI.
         </p>
       </div>
       <div class="reveal">
@@ -1697,15 +1829,15 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
 <section class="jade" id="about" data-rail="Who we are">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="label">Who we are</span>
-      <h2>A small team that builds it, then keeps it running.</h2>
+      <h2>Who we are</h2>
     </div>
 
     <!-- ┌──────────────────────────────────────────────────────────────┐
          │ FOUNDERS — names, photographs and career history supplied by │
          │ the client and used as given. Nothing here is inferred; the  │
          │ only edits are expanding CMO to Chief Marketing Officer and  │
-         │ ordering each list most-recent-first.                        │
+         │ ordering each list most-recent-first. Dates are deliberately │
+         │ not shown — do not add them back.                            │
          │                                                              │
          │ Portraits: 352px WebP data URIs (33 KB for all three) so     │
          │ index.html stays one self-contained file. 240px and 480px    │
@@ -1719,7 +1851,6 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
          │ point at a specific market. Delete any .fdr__edu line to     │
          │ remove the city names without touching anything else.        │
          └──────────────────────────────────────────────────────────────┘ -->
-    <span class="label reveal" style="margin-top:clamp(38px,4.4vw,64px)">The founders</span>
     <ul class="team reveal">
       <li class="fdr">
         <span class="fdr__shot">
@@ -1731,27 +1862,27 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
           <ul class="fdr__roles">
             <li>
               <b>Head of Gen AI</b>
-              <span class="fdr__at"><span class="fdr__co">Exponentia AI</span><span class="fdr__yr">2024–2025</span></span>
+              <span class="fdr__at"><span class="fdr__co">Exponentia AI</span></span>
             </li>
             <li>
               <b>Director of Marketing</b>
-              <span class="fdr__at"><span class="fdr__co">CommerceIQ</span><span class="fdr__yr">2023–2024</span></span>
+              <span class="fdr__at"><span class="fdr__co">CommerceIQ</span></span>
             </li>
             <li>
               <b>Chief Marketing Officer</b>
-              <span class="fdr__at"><span class="fdr__co">MIT World University</span><span class="fdr__yr">2022–2023</span></span>
+              <span class="fdr__at"><span class="fdr__co">MIT World University</span></span>
             </li>
             <li>
               <b>National Head, Marketing</b>
-              <span class="fdr__at"><span class="fdr__co">Bajaj Finserv</span><span class="fdr__yr">2016–2019</span></span>
+              <span class="fdr__at"><span class="fdr__co">Bajaj Finserv</span></span>
             </li>
             <li>
               <b>Head of Communications and Content</b>
-              <span class="fdr__at"><span class="fdr__co">Flipkart</span><span class="fdr__yr">2014–2016</span></span>
+              <span class="fdr__at"><span class="fdr__co">Flipkart</span></span>
             </li>
             <li>
               <b>Technical Leader</b>
-              <span class="fdr__at"><span class="fdr__co">Siemens</span><span class="fdr__yr">2004–2006</span></span>
+              <span class="fdr__at"><span class="fdr__co">Siemens</span></span>
             </li>
           </ul>
           <p class="fdr__edu"><b>Studied</b>ISB · IET</p>
@@ -1767,19 +1898,27 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
           <ul class="fdr__roles">
             <li>
               <b>Head of Customer Marketing</b>
-              <span class="fdr__at"><span class="fdr__co">CommerceIQ</span><span class="fdr__yr">2022–2026</span></span>
+              <span class="fdr__at"><span class="fdr__co">CommerceIQ</span></span>
             </li>
             <li>
               <b>Head of Ecommerce for Business</b>
-              <span class="fdr__at"><span class="fdr__co">Samsung, USA</span><span class="fdr__yr">2018–2022</span></span>
+              <span class="fdr__at"><span class="fdr__co">Samsung, USA</span></span>
             </li>
             <li>
               <b>Director, Digital Transformation</b>
-              <span class="fdr__at"><span class="fdr__co">L&amp;T</span><span class="fdr__yr">2017–2018</span></span>
+              <span class="fdr__at"><span class="fdr__co">L&amp;T</span></span>
             </li>
             <li>
               <b>Director, Sales and Client Relations</b>
-              <span class="fdr__at"><span class="fdr__co">Brillio</span><span class="fdr__yr">2015–2017</span></span>
+              <span class="fdr__at"><span class="fdr__co">Brillio</span></span>
+            </li>
+            <li>
+              <b>Technical Lead</b>
+              <span class="fdr__at"><span class="fdr__co">Cisco</span></span>
+            </li>
+            <li>
+              <b>Engineering Lead</b>
+              <span class="fdr__at"><span class="fdr__co">Huawei, China</span></span>
             </li>
           </ul>
           <p class="fdr__edu"><b>Studied</b>IIM Calcutta · IIIT Bangalore</p>
@@ -1795,18 +1934,46 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
           <ul class="fdr__roles">
             <li>
               <b>Chief Business Officer</b>
-              <span class="fdr__at"><span class="fdr__co">Gravity Classes</span><span class="fdr__yr">2024–2026</span></span>
+              <span class="fdr__at"><span class="fdr__co">Gravity Classes</span></span>
             </li>
             <li>
               <b>Chief Business Officer</b>
-              <span class="fdr__at"><span class="fdr__co">Biddin</span><span class="fdr__yr">2023–2026</span></span>
+              <span class="fdr__at"><span class="fdr__co">Biddin</span></span>
             </li>
             <li>
               <b>Business Unit Head</b>
-              <span class="fdr__at"><span class="fdr__co">BYJU’S</span><span class="fdr__yr">2022–2023</span></span>
+              <span class="fdr__at"><span class="fdr__co">BYJU’S</span></span>
             </li>
           </ul>
-          <p class="fdr__edu"><b>Studied</b>United College of Engineering and Research · 2012–2016</p>
+          <p class="fdr__edu"><b>Studied</b>United College of Engineering and Research</p>
+        </div>
+      </li>
+      <li class="fdr">
+        <span class="fdr__shot">
+          <img src="data:image/webp;base64,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"
+               alt="" width="352" height="352" decoding="async">
+        </span>
+        <div class="fdr__body">
+          <h3 class="fdr__n">Sreekanth Venkatramani</h3>
+          <ul class="fdr__roles">
+            <li>
+              <b>Associate Partner, Business Consulting</b>
+              <span class="fdr__at"><span class="fdr__co">Infosys Consulting</span></span>
+            </li>
+            <li>
+              <b>Manager</b>
+              <span class="fdr__at"><span class="fdr__co">Deloitte &amp; Touche</span></span>
+            </li>
+            <li>
+              <b>Associate Consultant</b>
+              <span class="fdr__at"><span class="fdr__co">Oracle Financial Services Software</span></span>
+            </li>
+            <li>
+              <b>Consultant</b>
+              <span class="fdr__at"><span class="fdr__co">Headstrong Consulting</span></span>
+            </li>
+          </ul>
+          <p class="fdr__edu"><b>Studied</b>IIM Calcutta · NIT Calicut</p>
         </div>
       </li>
     </ul>
@@ -1821,7 +1988,7 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="label">Enquiries</span>
-      <h2>Tell us what repeats every week.</h2>
+      <h2>Book an audit and find out where AI fits your business.</h2>
       <p>One line is enough for us to tell you if we can help.</p>
     </div>
 
@@ -1830,16 +1997,13 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
         <!-- PLACEHOLDER: replace 00000000000 with the studio WhatsApp number in
              full international format, digits only. The number is never rendered
              on the page — it lives in the href alone. -->
-        <a class="enq__wa" href="https://wa.me/00000000000?text=Hello%20Rewire%2C%20I%20have%20a%20process%20that%20repeats%20every%20week."
+        <a class="enq__wa" href="https://wa.me/00000000000?text=Hello%20Rewire%2C%20I%20would%20like%20a%20free%20AI%20audit."
            rel="noopener">
           <span class="label">Best way</span>
           <h3>Message us on WhatsApp</h3>
           <p>Send one line about the job. We reply in the same chat.</p>
         </a>
 
-        <p class="enq__meta">
-          <b>We reply within three working days.</b>
-        </p>
       </div>
 
       <div class="reveal">
@@ -1865,7 +2029,7 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
             <input type="tel" id="fPhone" name="phone" autocomplete="tel" inputmode="tel">
           </div>
           <div class="field">
-            <label for="fWhat">What repeats every week?</label>
+            <label for="fWhat">What are your top business challenges?</label>
             <textarea id="fWhat" name="process" rows="3" required></textarea>
             <span class="err" id="errWhat" hidden>Please tell us in one line.</span>
           </div>
@@ -1902,7 +2066,7 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
         <ul>
           <li><a href="#what-we-build">What we build</a></li>
           <li><a href="#proof">Work</a></li>
-          <li><a href="#risk">How we work</a></li>
+          <li><a href="#before-after">How we work</a></li>
           <li><a href="#data">Your data</a></li>
           <li><a href="#about">About</a></li>
         </ul>
@@ -1920,7 +2084,6 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
     </div>
     <div class="ftr__base">
       <span>&copy; 2026 Rewire</span>
-      <span>Response within three working days</span>
     </div>
   </div>
 </footer>
@@ -2216,7 +2379,11 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
 
     function setActive(i) {
       nodes.forEach(function (n, k) { n.classList.toggle("is-active", k === i); });
-      edges.forEach(function (e, k) { e.classList.toggle("is-lit", k === i - 1 || k === i); });
+      /* A graph, not a chain: each edge names its two steps. */
+      edges.forEach(function (e) {
+        e.classList.toggle("is-lit",
+          +e.getAttribute("data-from") === i || +e.getAttribute("data-to") === i);
+      });
       if (captions[i] && capLabel && capText) {
         capLabel.textContent = captions[i].title;
         capText.textContent  = captions[i].body;
@@ -2243,7 +2410,7 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
           if (!e.isIntersecting) return;
           placed.disconnect();
           nodes.forEach(function (n, i) {
-            setTimeout(function () { n.classList.add("is-placed"); }, i * 110);
+            setTimeout(function () { n.classList.add("is-placed"); }, i * 60);
           });
         });
       }, { threshold: 0.2 });
@@ -2257,9 +2424,16 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
     /* Data packets travelling the chain. Hidden entirely under reduced motion. */
     if (REDUCED || !packetLayer || !edges.length || !edges[0].getPointAtLength) return;
 
-    var lengths = edges.map(function (e) { return e.getTotalLength(); });
+    /* Packets run the happy path only. The branches and the two retry loops
+       are drawn, but nothing is animated down them. */
+    var edgeBox = $("#pipeEdges");
+    var trunk = edgeBox && edgeBox.getAttribute("data-trunk");
+    var route = trunk
+      ? trunk.split(",").map(function (n) { return edges[+n]; }).filter(Boolean)
+      : edges;
+    var lengths = route.map(function (e) { return e.getTotalLength(); });
     var SVGNS = "http://www.w3.org/2000/svg";
-    var PACKETS = 3, EDGE_MS = 900, TOTAL = edges.length;
+    var PACKETS = 3, EDGE_MS = 900, TOTAL = route.length;
     var packets = [];
 
     for (var p = 0; p < PACKETS; p++) {
@@ -2282,7 +2456,7 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
         k.pos += dt / EDGE_MS;
         if (k.pos >= TOTAL) k.pos -= TOTAL;
         var idx = Math.floor(k.pos);
-        var pt = edges[idx].getPointAtLength((k.pos - idx) * lengths[idx]);
+        var pt = route[idx].getPointAtLength((k.pos - idx) * lengths[idx]);
         k.el.setAttribute("cx", pt.x.toFixed(1));
         k.el.setAttribute("cy", pt.y.toFixed(1));
       }
@@ -2366,13 +2540,16 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
     var monthly = $("#calcMonthly"), annual = $("#calcAnnual");
 
     /* Share of repetitive time a live build typically removes. */
-    var RECOVERY = 0.65;
+    var RECOVERY = 0.35;
+    /* The cost slider is a month of one person's time, so it is divided by a
+       standard working month to get back to the cost of one hour. */
+    var HOURS_IN_MONTH = 160;
     var shown = { m: 0, a: 0 }, target = { m: 0, a: 0 }, animating = false;
 
     function compute() {
       var t = parseFloat(team.value), h = parseFloat(hours.value), c = parseFloat(cost.value);
       target.m = t * h * RECOVERY * (52 / 12);
-      target.a = t * h * RECOVERY * 52 * c;
+      target.a = t * h * RECOVERY * 52 * (c / HOURS_IN_MONTH);
       teamOut.textContent  = nf.format(t);
       hoursOut.textContent = h % 1 ? h.toFixed(1) : nf.format(h);
       costOut.textContent  = "$" + nf.format(c);
@@ -2411,7 +2588,12 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
     if (!sw || !before || !after) return;
 
     var figs = { steps: $("#baSteps"), hours: $("#baHours"), hands: $("#baHands") };
-    var VALUES = { manual: { steps: 11, hours: 23, hands: 6 }, auto: { steps: 3, hours: 2, hands: 1 } };
+    var hoursLabel = $("#baHoursLabel");
+    /* The hours figure reads differently on each side of the switch: today it
+       is hours spent, automated it is hours handed back. */
+    var HOURS_WORDS = { manual: "hours a week across the team", auto: "hours saved across the team" };
+    var hoursSuffix = "";
+    var VALUES = { manual: { steps: 11, hours: 23, hands: 6 }, auto: { steps: 3, hours: 20, hands: 1 } };
     var current = { steps: 11, hours: 23, hands: 6 };
     var rolling = false;
 
@@ -2419,12 +2601,17 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
       sw.setAttribute("aria-checked", String(automated));
       if (automated) { before.setAttribute("data-off", ""); after.removeAttribute("data-off"); }
       else { after.setAttribute("data-off", ""); before.removeAttribute("data-off"); }
+      hoursSuffix = automated ? "+" : "";
+      if (hoursLabel) hoursLabel.textContent = automated ? HOURS_WORDS.auto : HOURS_WORDS.manual;
       rollTo(automated ? VALUES.auto : VALUES.manual);
     }
 
     function rollTo(to) {
       if (REDUCED) {
-        Object.keys(to).forEach(function (k) { current[k] = to[k]; figs[k].textContent = to[k]; });
+        Object.keys(to).forEach(function (k) {
+          current[k] = to[k];
+          figs[k].textContent = to[k] + (k === "hours" ? hoursSuffix : "");
+        });
         return;
       }
       var t0 = 0;
@@ -2437,7 +2624,7 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
         var eased = 1 - Math.pow(1 - p, 3);
         Object.keys(to).forEach(function (k) {
           current[k] = from[k] + (to[k] - from[k]) * eased;
-          figs[k].textContent = Math.round(current[k]);
+          figs[k].textContent = Math.round(current[k]) + (k === "hours" ? hoursSuffix : "");
         });
         if (p < 1) requestAnimationFrame(step); else rolling = false;
       };
@@ -2487,7 +2674,7 @@ input[type=range]:focus-visible::-moz-range-thumb{ outline:2px solid var(--terra
         .then(function (r) {
           if (!r.ok) throw new Error("bad response");
           form.reset();
-          status.textContent = "Got it. We reply within three working days.";
+          status.textContent = "Got it. Your enquiry is with us.";
         })
         .catch(function () {
           status.style.color = "var(--state-warn)";
