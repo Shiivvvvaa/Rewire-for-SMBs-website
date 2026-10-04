@@ -7,8 +7,10 @@
 
 /* ─── CONFIG: every placeholder lives here ─────────────────────────── */
 const CONFIG = {
-  // PLACEHOLDER: WhatsApp number in full international format, digits only.
-  whatsappNumber: "00000000000",
+  // WhatsApp / phone number in full international format, digits only.
+  whatsappNumber: "13106906999",
+  // How the number is shown on the page.
+  phoneDisplay: "+1 (310) 690-6999",
   whatsappText: "Hello Rewire AI, I would like a free AI audit.",
   // Form endpoint (the existing n8n lead-capture webhook). Set to "" to
   // simulate a successful send while testing.
@@ -1370,6 +1372,8 @@ async function submitEnquiry(data) {
     if (wa) wa.href = href;
     $$(".js-wa").forEach((a) => (a.href = "https://wa.me/" + CONFIG.whatsappNumber));
     $$(".js-mail").forEach((a) => { a.href = "mailto:" + CONFIG.email; a.textContent = CONFIG.email; });
+    $$(".js-tel").forEach((a) => { a.href = "tel:+" + CONFIG.whatsappNumber; a.textContent = CONFIG.phoneDisplay; });
+    $$(".js-phone").forEach((el) => (el.textContent = CONFIG.phoneDisplay));
     const typed = $(".wa__typed");
     if (!wa || !typed) return;
     const msg = CONFIG.whatsappText;
