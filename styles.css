@@ -240,7 +240,7 @@
     outline: 2px solid var(--jade); outline-offset: -5px; padding: 11px 16px; font-size: 12px;
     transform: translate(-50%, -50%) scale(1) rotate(-8deg);
   }
-  .cursor.is-down .cursor__label { transform: translate(-50%, -50%) scale(.86) rotate(-8deg); }
+  .cursor.is-label.is-down .cursor__label { transform: translate(-50%, -50%) scale(.86) rotate(-8deg); }
   .has-cursor, .has-cursor * { cursor: none; }
   .has-cursor input:not([type="range"]):not([type="checkbox"]), .has-cursor textarea, .has-cursor select { cursor: text; }
 
@@ -904,6 +904,7 @@
   .wa .label { color: var(--on-jade-soft); }
   .wa__title { margin: 10px 0 12px; font: 700 clamp(2rem, 1.3rem + 2.8vw, 3.75rem)/.98 var(--f-display); letter-spacing: -.035em; }
   .wa__copy p:not(.label) { color: var(--on-jade-soft); font-size: var(--fs-lead); }
+  .wa__copy p.wa__num { margin-top: 14px; color: var(--on-jade); font: 600 clamp(1.05rem, .95rem + .4vw, 1.3rem)/1.2 var(--f-display); letter-spacing: .01em; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .wa__arrow { position: absolute; right: 0; bottom: 0; width: 60px; height: 60px; border-radius: 50%; background: var(--terra-deep); display: grid; place-items: center; transition: transform var(--t-slow) var(--ease-out); }
   .wa__arrow svg { width: 24px; height: 24px; fill: none; stroke: var(--on-terra); stroke-width: 2; }
   .wa:hover .wa__arrow { transform: translateX(6px) rotate(-12deg); }
